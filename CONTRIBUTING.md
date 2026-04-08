@@ -52,10 +52,10 @@ Ensure it works by visiting http://localhost:5173/
 ## Todo
 * add aria labels, titles and other accessibility features
 * add tests
-* add user accounts & user management (roles user/admin/god)
-* add tenant management (1 table per tenant)
-* add offline / pwa / sync features
-* add history / actions tracking / audit trail
+* add tenant management
+* add password encryption
+* add auto-clean up and management interface
+
 * add about and legal and contact
 * add docker file and other deployment preparation
 * ensure app is secure

@@ -78,7 +78,7 @@ class GridServiceTest {
         cell.setId(5L);
         cell.setContent("Bingo Cell");
 
-        when(cellRepository.findByGrid_id(3L)).thenReturn(singletonList(cell));
+        when(cellRepository.findByGrid_Id(3L)).thenReturn(singletonList(cell));
 
         List<Cell> result = gridService.getCellsByGrid(grid);
 

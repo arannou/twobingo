@@ -79,6 +79,6 @@ public class GridService {
     }
 
     public List<Cell> getCellsByGrid(Grid grid) {
-        return cellRepository.findByGrid_id(grid.getId());
+        return cellRepository.findByGrid_Id(grid.getId());
     }
 }

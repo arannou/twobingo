@@ -15,4 +15,6 @@ public interface ParticipationRepository extends JpaRepository<Participation, Lo
 
     List<Participation> findByUser(User user);
 
+    List<Participation> findByUserIn(List<User> oldUsers);
+
 }

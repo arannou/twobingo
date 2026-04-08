@@ -2,6 +2,7 @@ package com.twobingo.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "grid")
@@ -35,6 +36,12 @@ public class Grid {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true)
     private User creator_id;
+
+    @OneToMany(mappedBy = "grid", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Cell> cells;
+
+    @OneToMany(mappedBy = "grid", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Participation> participations;
 
     public Grid() {
     }
@@ -127,6 +134,22 @@ public class Grid {
 
     public void setCreator_id(User creator_id) {
         this.creator_id = creator_id;
+    }
+
+    public List<Cell> getCells() {
+        return cells;
+    }
+
+    public void setCells(List<Cell> cells) {
+        this.cells = cells;
+    }
+
+    public List<Participation> getParticipations() {
+        return participations;
+    }
+
+    public void setParticipations(List<Participation> participations) {
+        this.participations = participations;
     }
 
     @PrePersist

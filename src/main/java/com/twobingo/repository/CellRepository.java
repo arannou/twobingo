@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface CellRepository extends JpaRepository<Cell, Long> {
 
-    List<Cell> findByGrid_id(Long gridId);
+    List<Cell> findByGrid_Id(Long gridId);
 
 }

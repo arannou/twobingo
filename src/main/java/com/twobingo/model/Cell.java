@@ -11,10 +11,9 @@ public class Cell {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // foreign key to grid
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "grid_id")
-    private Long grid_id;
+    private Grid grid;
 
     @Column(length = 1000)
     private String content;
@@ -41,12 +40,12 @@ public class Cell {
         this.id = id;
     }
 
-    public Long getGrid_id() {
-        return grid_id;
+    public Grid getGrid() {
+        return grid;
     }
 
-    public void setGrid_id(Long grid_id) {
-        this.grid_id = grid_id;
+    public void setGrid(Grid grid) {
+        this.grid = grid;
     }
 
     public String getContent() {

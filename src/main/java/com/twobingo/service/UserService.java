@@ -57,6 +57,12 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    // delete many users by ids
+    public void deleteUsers(List<Long> ids) {
+        List<User> usersToDelete = userRepository.findAllById(ids);
+        userRepository.deleteAll(usersToDelete);
+    }
+
     public List<Grid> getCreatedGrids(User user) {
         return gridRepository.findByCreator_id(user);
     }
@@ -67,5 +73,17 @@ public class UserService {
                 .map(Participation::getGrid)
                 .filter(grid -> grid != null)
                 .collect(Collectors.toList());
+    }
+
+    /** Find all users created more that 2 years ago with no participations */
+    public List<User> getInactiveUsers() {
+        java.time.LocalDateTime twoYearsAgo = java.time.LocalDateTime.now().minusYears(2);
+        List<User> oldUsers = userRepository.findByCreatedDateBefore(twoYearsAgo);
+        List<Participation> theirParticipations = participationRepository.findByUserIn(oldUsers);
+        // if no participations, then they are inactive
+        return oldUsers.stream()
+                .filter(user -> theirParticipations.stream().noneMatch(p -> p.getUser().equals(user)))
+                .collect(Collectors.toList());
+
     }
 }
