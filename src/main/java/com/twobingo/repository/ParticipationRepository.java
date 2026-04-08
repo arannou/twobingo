@@ -13,8 +13,8 @@ public interface ParticipationRepository extends JpaRepository<Participation, Lo
 
     List<Participation> findByGrid(Grid grid);
 
-    List<Participation> findByUser(User user);
+    List<Participation> findByUseraccount(User user);
 
-    List<Participation> findByUserIn(List<User> oldUsers);
+    List<Participation> findByUseraccountIn(List<User> oldUsers);
 
 }

@@ -11,9 +11,9 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findByUserName(String userName);
+    Optional<User> findByUsername(String username);
 
     /** Find old users */
-    List<User> findByCreatedDateBefore(java.time.LocalDateTime date);
+    List<User> findByCreatedAtBefore(java.time.LocalDateTime date);
 
 }

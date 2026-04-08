@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,9 +20,9 @@ import java.util.Optional;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -47,7 +48,7 @@ class UserServiceTest {
         user.setId(1L);
         user.setUsername("player1");
 
-        when(userRepository.findByUserName("player1")).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername("player1")).thenReturn(Optional.of(user));
 
         Optional<User> result = userService.getUserByUsername("player1");
 
@@ -69,7 +70,7 @@ class UserServiceTest {
         participation.setUser(user);
         participation.setGrid(grid);
 
-        when(participationRepository.findByUser(user)).thenReturn(singletonList(participation));
+        when(participationRepository.findByUseraccount(user)).thenReturn(singletonList(participation));
 
         List<Grid> result = userService.getParticipatingGrids(user);
 
@@ -87,7 +88,7 @@ class UserServiceTest {
         grid.setId(11L);
         grid.setName("Created Grid");
 
-        when(gridRepository.findByCreator_id(user)).thenReturn(singletonList(grid));
+        when(gridRepository.findByCreator(user)).thenReturn(singletonList(grid));
 
         List<Grid> result = userService.getCreatedGrids(user);
 
@@ -132,7 +133,7 @@ class UserServiceTest {
         user.setUsername("testuser");
         user.setPassword("hashedPassword");
 
-        when(userRepository.findByUserName("testuser")).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("password", "hashedPassword")).thenReturn(true);
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -144,7 +145,7 @@ class UserServiceTest {
 
     @Test
     void login_returnsEmptyForInvalidCredentials() {
-        when(userRepository.findByUserName("testuser")).thenReturn(Optional.empty());
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
 
         Optional<String> result = userService.login("testuser", "password");
 

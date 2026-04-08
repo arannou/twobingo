@@ -39,7 +39,7 @@ public class UserService {
     }
 
     public Optional<User> getUserByUsername(String username) {
-        return userRepository.findByUserName(username);
+        return userRepository.findByUsername(username);
     }
 
     public User createUser(User user) {
@@ -69,11 +69,11 @@ public class UserService {
     }
 
     public List<Grid> getCreatedGrids(User user) {
-        return gridRepository.findByCreator_id(user);
+        return gridRepository.findByCreator(user);
     }
 
     public List<Grid> getParticipatingGrids(User user) {
-        List<Participation> participations = participationRepository.findByUser(user);
+        List<Participation> participations = participationRepository.findByUseraccount(user);
         return participations.stream()
                 .map(Participation::getGrid)
                 .filter(grid -> grid != null)
@@ -83,8 +83,8 @@ public class UserService {
     /** Find all users created more that 2 years ago with no participations */
     public List<User> getInactiveUsers() {
         java.time.LocalDateTime twoYearsAgo = java.time.LocalDateTime.now().minusYears(2);
-        List<User> oldUsers = userRepository.findByCreatedDateBefore(twoYearsAgo);
-        List<Participation> theirParticipations = participationRepository.findByUserIn(oldUsers);
+        List<User> oldUsers = userRepository.findByCreatedAtBefore(twoYearsAgo);
+        List<Participation> theirParticipations = participationRepository.findByUseraccountIn(oldUsers);
         // if no participations, then they are inactive
         return oldUsers.stream()
                 .filter(user -> theirParticipations.stream().noneMatch(p -> p.getUser().equals(user)))

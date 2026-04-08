@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface GridRepository extends JpaRepository<Grid, Long> {
 
-    List<Grid> findByCreator_id(User creator);
+    List<Grid> findByCreator(User creator);
 
 }

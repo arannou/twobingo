@@ -35,7 +35,7 @@ public class GridService {
     }
 
     public List<Grid> getGridsByCreator(User creator) {
-        return gridRepository.findByCreator_id(creator);
+        return gridRepository.findByCreator(creator);
     }
 
     public Grid createGrid(Grid grid) {
@@ -52,7 +52,7 @@ public class GridService {
             grid.setStyle(gridDetails.getStyle());
             grid.setColor(gridDetails.getColor());
             grid.setIsArchived(gridDetails.getIsArchived());
-            grid.setCreator_id(gridDetails.getCreator_id());
+            grid.setCreator(gridDetails.getCreator());
             return gridRepository.save(grid);
         }
         throw new RuntimeException("Grid not found with id: " + id);
@@ -71,7 +71,7 @@ public class GridService {
     }
 
     public List<Grid> getGridsByUser(User user) {
-        List<Participation> participations = participationRepository.findByUser(user);
+        List<Participation> participations = participationRepository.findByUseraccount(user);
         return participations.stream()
                 .map(Participation::getGrid)
                 .filter(gridObj -> gridObj != null)

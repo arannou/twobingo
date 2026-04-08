@@ -17,7 +17,7 @@ public class Participation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true)
-    private User user;
+    private User useraccount;
 
     @Column(length = 100)
     private String pseudo;
@@ -36,7 +36,7 @@ public class Participation {
 
     public Participation(Grid grid, User user, String pseudo, String color) {
         this.grid = grid;
-        this.user = user;
+        this.useraccount = user;
         this.pseudo = pseudo;
         this.color = color;
     }
@@ -49,7 +49,7 @@ public class Participation {
 
     public Participation(Grid grid, User user, String color) {
         this.grid = grid;
-        this.user = user;
+        this.useraccount = user;
         this.pseudo = user.getUsername();
         this.color = color;
     }
@@ -72,11 +72,11 @@ public class Participation {
     }
 
     public User getUser() {
-        return user;
+        return useraccount;
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.useraccount = user;
     }
 
     public String getPseudo() {

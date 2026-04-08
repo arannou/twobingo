@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "user")
+@Table(name = "useraccount")
 public class User {
 
     @Id
@@ -28,7 +28,7 @@ public class User {
     @Column(name = "connection_token")
     private String connectionToken;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "useraccount", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participation> participations;
 
     public User() {

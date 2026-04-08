@@ -35,7 +35,7 @@ public class Grid {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true)
-    private User creator_id;
+    private User creator;
 
     @OneToMany(mappedBy = "grid", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cell> cells;
@@ -54,13 +54,13 @@ public class Grid {
         this.color = color;
     }
 
-    public Grid(String name, String description, Integer size, String style, String color, User creator_id) {
+    public Grid(String name, String description, Integer size, String style, String color, User creator) {
         this.name = name;
         this.description = description;
         this.size = size;
         this.style = style;
         this.color = color;
-        this.creator_id = creator_id;
+        this.creator = creator;
     }
 
     // Getters and Setters
@@ -128,12 +128,12 @@ public class Grid {
         this.createdAt = createdAt;
     }
 
-    public User getCreator_id() {
-        return creator_id;
+    public User getCreator() {
+        return creator;
     }
 
-    public void setCreator_id(User creator_id) {
-        this.creator_id = creator_id;
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 
     public List<Cell> getCells() {
