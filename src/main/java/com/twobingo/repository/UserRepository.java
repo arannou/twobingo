@@ -11,9 +11,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    /**
-     * Find an inventory item by SKU
-     */
     Optional<User> findByUserName(String userName);
 
     /** Find old users */

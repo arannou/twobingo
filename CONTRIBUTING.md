@@ -51,11 +51,15 @@ Ensure it works by visiting http://localhost:5173/
 
 ## Todo
 * add aria labels, titles and other accessibility features
+
 * add tests
-* add tenant management
 * add password encryption
 * add auto-clean up and management interface
 
 * add about and legal and contact
 * add docker file and other deployment preparation
 * ensure app is secure
+
+* feature: ordered cells or random
+* feature: check a line and win
+* feature: kick a player

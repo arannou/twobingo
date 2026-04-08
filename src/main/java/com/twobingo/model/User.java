@@ -25,6 +25,9 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "connection_token")
+    private String connectionToken;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participation> participations;
 
@@ -84,6 +87,14 @@ public class User {
 
     public void setParticipations(List<Participation> participations) {
         this.participations = participations;
+    }
+
+    public String getConnectionToken() {
+        return connectionToken;
+    }
+
+    public void setConnectionToken(String connectionToken) {
+        this.connectionToken = connectionToken;
     }
 
     @PrePersist

@@ -1,6 +1,7 @@
 package com.twobingo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import com.twobingo.controller.LoginRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import com.twobingo.service.GridService;
 import com.twobingo.service.UserService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -129,6 +131,34 @@ public class TwobingoController {
         return gridService.getGridById(gridId)
                 .map(grid -> ResponseEntity.ok(gridService.getUsersByGrid(grid)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        Optional<String> token = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+        if (token.isPresent()) {
+            return ResponseEntity.ok(Map.of("connectionToken", token.get()));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+        }
+    }
+
+    // logout endpoint to invalidate the token
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String username) {
+        userService.logout(username);
+        return ResponseEntity.ok("Logged out successfully");
+    }
+
+    // is token valid endpoint to check if the token is valid
+    @GetMapping("/validate-token/{username}")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token,
+            @PathVariable String username) {
+        boolean isValid = userService.validateToken(username, token);
+        if (!isValid) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+        return ResponseEntity.ok("Token is valid");
     }
 
     /**

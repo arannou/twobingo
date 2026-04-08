@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -19,7 +20,8 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -32,6 +34,9 @@ class UserServiceTest {
 
     @Mock
     private ParticipationRepository participationRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserService userService;
@@ -118,5 +123,31 @@ class UserServiceTest {
         userService.deleteUser(4L);
 
         verify(userRepository).deleteById(4L);
+    }
+
+    @Test
+    void login_returnsTokenForValidCredentials() {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testuser");
+        user.setPassword("hashedPassword");
+
+        when(userRepository.findByUserName("testuser")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("password", "hashedPassword")).thenReturn(true);
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Optional<String> result = userService.login("testuser", "password");
+
+        assertThat(result).isPresent();
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void login_returnsEmptyForInvalidCredentials() {
+        when(userRepository.findByUserName("testuser")).thenReturn(Optional.empty());
+
+        Optional<String> result = userService.login("testuser", "password");
+
+        assertThat(result).isEmpty();
     }
 }

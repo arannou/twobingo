@@ -7,10 +7,12 @@ import com.twobingo.repository.GridRepository;
 import com.twobingo.repository.ParticipationRepository;
 import com.twobingo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +26,9 @@ public class UserService {
 
     @Autowired
     private ParticipationRepository participationRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -85,5 +90,45 @@ public class UserService {
                 .filter(user -> theirParticipations.stream().noneMatch(p -> p.getUser().equals(user)))
                 .collect(Collectors.toList());
 
+    }
+
+    public Optional<String> login(String username, String password) {
+        Optional<User> userOpt = getUserByUsername(username);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                String token = UUID.randomUUID().toString();
+                user.setConnectionToken(token);
+                userRepository.save(user);
+                return Optional.of(token);
+            }
+        }
+        return Optional.empty();
+    }
+
+    // logout method to invalidate the token
+    public void logout(String username) {
+        Optional<User> userOpt = getUserByUsername(username);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setConnectionToken(null);
+            userRepository.save(user);
+        }
+    }
+
+    // validateToken
+    public boolean validateToken(String username, String token) {
+        Optional<User> userOpt = getUserByUsername(username);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if (token.equals(user.getConnectionToken())) {
+                return true;
+            } else {
+                user.setConnectionToken(null);
+                userRepository.save(user);
+                return false;
+            }
+        }
+        return false;
     }
 }
