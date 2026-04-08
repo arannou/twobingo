@@ -17,6 +17,8 @@ import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -86,5 +88,35 @@ class UserServiceTest {
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getName()).isEqualTo("Created Grid");
+    }
+
+    @Test
+    void updateUser_updatesExistingUser() {
+        User existing = new User();
+        existing.setId(1L);
+        existing.setUsername("oldUser");
+        existing.setAvatarImagePath("/avatar.png");
+        existing.setPassword("oldpass");
+
+        User details = new User();
+        details.setUsername("newUser");
+        details.setAvatarImagePath("/new-avatar.png");
+        details.setPassword("newpass");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        User result = userService.updateUser(1L, details);
+
+        assertThat(result.getUsername()).isEqualTo("newUser");
+        assertThat(result.getAvatarImagePath()).isEqualTo("/new-avatar.png");
+        assertThat(result.getPassword()).isEqualTo("newpass");
+    }
+
+    @Test
+    void deleteUser_callsRepositoryDelete() {
+        userService.deleteUser(4L);
+
+        verify(userRepository).deleteById(4L);
     }
 }

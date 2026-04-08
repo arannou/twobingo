@@ -14,9 +14,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -84,5 +87,44 @@ class GridServiceTest {
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getContent()).isEqualTo("Bingo Cell");
+    }
+
+    @Test
+    void updateGrid_updatesExistingGrid() {
+        Grid existing = new Grid();
+        existing.setId(1L);
+        existing.setName("Old Name");
+        existing.setDescription("Old desc");
+        existing.setSize(3);
+        existing.setStyle("old-style");
+        existing.setColor("blue");
+        existing.setIsArchived(false);
+
+        Grid details = new Grid();
+        details.setName("New Name");
+        details.setDescription("New desc");
+        details.setSize(5);
+        details.setStyle("new-style");
+        details.setColor("red");
+        details.setIsArchived(true);
+
+        when(gridRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(gridRepository.save(any(Grid.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Grid result = gridService.updateGrid(1L, details);
+
+        assertThat(result.getName()).isEqualTo("New Name");
+        assertThat(result.getDescription()).isEqualTo("New desc");
+        assertThat(result.getSize()).isEqualTo(5);
+        assertThat(result.getStyle()).isEqualTo("new-style");
+        assertThat(result.getColor()).isEqualTo("red");
+        assertThat(result.getIsArchived()).isTrue();
+    }
+
+    @Test
+    void deleteGrid_callsRepositoryDelete() {
+        gridService.deleteGrid(2L);
+
+        verify(gridRepository).deleteById(2L);
     }
 }
