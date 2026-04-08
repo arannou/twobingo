@@ -1,0 +1,158 @@
+<script setup>
+import { useRouter, useRoute } from 'vue-router'
+import { onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import UserThumbnail from './components/UserComponents/UserThumbnail.vue'
+
+const router = useRouter()
+const route = useRoute()
+const { t, locale } = useI18n()
+
+const languages = [
+  { code: 'en-US', label: 'English (US)' },
+  { code: 'fr-FR', label: 'Français' },
+]
+
+const storeLocale = () => {
+  localStorage.setItem('locale', locale.value)
+}
+
+const loadLocale = () => {
+  const loc = localStorage.getItem('locale')
+  if (loc && languages.some(lang => lang.code === loc)) {
+    locale.value = loc
+  }
+}
+
+onMounted(() => {
+  loadLocale()
+})
+</script>
+
+<template>
+  <div class="app">
+    <header>
+      <div class="app-header inverted">
+        <h1>{{ t('app.title') }}</h1>
+        <select v-model="locale" class="locale-select" name="language-select" @change="storeLocale">
+          <option v-for="lang in languages" :key="lang.code" :value="lang.code">
+            {{ lang.label }}
+          </option>
+        </select>
+        <UserThumbnail />
+      </div>
+      <nav>
+        <router-link to="/" class="nav-link" :class="{ active: route.path === '/' }">
+          titre 1
+        </router-link>
+        <router-link to="/grid-editor" class="nav-link" :class="{ active: route.path === '/grid-editor' }">
+          titre 2
+        </router-link>
+      </nav>
+    </header>
+    <main>
+      <router-view />
+    </main>
+  </div>
+</template>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  min-height: 100vh;
+}
+
+
+header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.app-header {
+  padding: 30px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+}
+
+.app-header h1 {
+  font-size: 32px;
+  margin: 0;
+  cursor: default;
+  color: var(--bg);
+}
+
+.locale-select {
+  padding: 8px 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  min-width: 160px;
+}
+
+.locale-select option {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.locale-select ::picker() {
+  border: none;
+}
+
+nav {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  border-bottom: 2px solid transparent;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-bottom-color: white;
+}
+
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  header h1 {
+    font-size: 24px;
+  }
+
+  nav {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .nav-link {
+    flex: 1;
+    text-align: center;
+  }
+
+  main {
+    padding: 10px;
+  }
+}
+</style>
