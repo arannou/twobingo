@@ -2,5 +2,30 @@
     "app": {
         "title": "Twobingo",
         "nav": {}
+    },
+    "userThumbnail": {
+        "altProfilePicture": "Photo de profil",
+        "guest": "Invité",
+        "login": "Connexion",
+        "register": "S'inscrire",
+        "profile": "Profil",
+        "settings": "Paramètres",
+        "logout": "Déconnexion"
+    },
+    "login": {
+        "noAccount": "Pas de compte ? S'inscrire ici",
+        "username": "Nom d'utilisateur",
+        "password": "Mot de passe",
+        "login": "Se connecter",
+        "cancel": "Annuler",
+        "haveAccount": "Déjà un compte ? Se connecter ici",
+        "repeatPassword": "Répéter le mot de passe",
+        "register": "S'inscrire"
+    },
+    "dashboard": {
+        "loading": "Chargement...",
+        "create": "Créer",
+        "refresh": "Actualiser",
+        "noItems": "Aucun élément trouvé"
     }
 }
