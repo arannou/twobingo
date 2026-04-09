@@ -56,31 +56,55 @@ onMounted(() => {
 
 <template>
   <div class="login-view">
-    <div clas="mode">
-        <nav>
-            <button @click="router.push('/login')">{{ t('login.login') }}</button>
-            <button @click="router.push('/register')">{{ t('login.register') }}</button>
-        </nav>
-    </div>
     <div class="form">
         <template v-if="mode === 'login'">
+            <a href="#" @click="router.push('/register')">{{ t('login.noAccount') }}</a>
             <input v-model="username" type="text" :placeholder="t('login.username')" />
             <input v-model="password" type="password" :placeholder="t('login.password')" />
-            <button @click="login()">{{ t('login.login') }}</button>
+            <div class="button-group">
+                <button class="primary" @click="login()">{{ t('login.login') }}</button>
+                <button @click="router.push('/')">{{ t('login.cancel') }}</button>
+            </div>
         </template>
         <template v-else>
-            <input v-model="username" type="text" :placeholder="t('login.username')" />
-            <input v-model="password" type="password" :placeholder="t('login.password')" />
-            <input v-model="repeatedPassword" type="password" :placeholder="t('login.repeatPassword')" />
-            <button @click="register()">{{ t('login.register') }}</button>
+            <a href="#" @click="router.push('/login')">{{ t('login.haveAccount') }}</a>
+            <input v-model="username" name="username" type="text" :placeholder="t('login.username')" />
+            <input v-model="password" name="password" type="password" :placeholder="t('login.password')" />
+            <input v-model="repeatedPassword" name="repeatedPassword" type="password" :placeholder="t('login.repeatPassword')" />
+
+            <div class="button-group">
+                <button class="primary" @click="register()">{{ t('login.register') }}</button>
+                <button @click="router.push('/')">{{ t('login.cancel') }}</button>
+            </div>
+            
         </template>
         <div v-if="userStore.error" class="error">{{ userStore.error }}</div>
-        <div class="button-group">
-            <button @click="router.push('/')">{{ t('login.backToHome') }}</button>
-        </div>
     </div>
 
   </div>
 </template>
 
-<style></style>
+<style lang="scss">
+
+@import "./../../variables.scss";
+
+.login-view .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    width: 50%;
+    margin: auto;
+
+    button {
+        margin: 0 2rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+@media (max-width:  $breakPointMedium) {
+    .login-view .form {
+        width: 80%;
+    }
+}
+</style>

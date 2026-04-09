@@ -9,7 +9,6 @@ const route = useRoute()
 const store = useUserStore()
 const { t } = useI18n()
 const isDropdownOpen = ref(false)
-const isloggedIn = ref(false)
 
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
@@ -17,17 +16,19 @@ const toggleDropdown = () => {
 
 const logout = () => {
     store.logout().then(() => {
-        router.push('/')
+      router.push('/')
     })
 }
 
-onMounted(() => {
-    store.getLoggedUser().then((user) => {
-      if (user) {
-        isloggedIn.value = true;
-      }
-    });
+const closeDropdown = (evt) => {
+  console.log('Focus out event:', evt.relatedTarget, evt.currentTarget);
+    if (!evt.currentTarget.contains(evt.relatedTarget)) {
+        isDropdownOpen.value = false;
+    }
+}
 
+onMounted(() => {
+    store.getLoggedUser()
 })
 </script>
 
@@ -49,12 +50,12 @@ onMounted(() => {
         </div>
     </div>
     <!-- dropdown -->
-    <div class="user-dropdown" >
+    <div class="user-dropdown" @focusout="evt => closeDropdown(evt)">
         <button class="dropdown-toggle" @click="toggleDropdown">{{isDropdownOpen ? '▲' : '▼'}}</button>
-        <div class="dropdown-menu" v-show="isDropdownOpen" @blur="isDropdownOpen = false">
-            <template v-if="!isloggedIn">
-                <a href="#" class="dropdown-item" @click="router.push('/login'); isDropdownOpen = false">{{ t('userThumbnail.login') }}</a>
-                <a href="#" class="dropdown-item" @click="router.push('/register'); isDropdownOpen = false">{{ t('userThumbnail.register') }}</a>
+        <div class="dropdown-menu" v-show="isDropdownOpen" @click="isDropdownOpen = false" >
+            <template v-if="!store.currentUser.username">
+                <a href="#" class="dropdown-item" @click="router.push('/login')">{{ t('userThumbnail.login') }}</a>
+                <a href="#" class="dropdown-item" @click="router.push('/register')">{{ t('userThumbnail.register') }}</a>
             </template>
             <template v-else>
                 <a href="#" class="dropdown-item">{{ t('userThumbnail.profile') }}</a>

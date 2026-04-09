@@ -57,7 +57,9 @@ onMounted(() => {
   </div>
 </template>
 
-<style>
+<style lang="scss">
+
+@import "variables.scss";
 * {
   margin: 0;
   padding: 0;
@@ -81,13 +83,37 @@ header {
   align-items: center;
   justify-content: space-between;
   background: none;
-}
 
-.app-header h1 {
-  font-size: 32px;
-  margin: 0;
-  cursor: default;
-  color: var(--bg);
+  h1 {
+    font-size: 32px;
+    margin: 0;
+    cursor: default;
+    color: var(--bg);
+  }
+
+
+}
+nav {
+  display: flex;
+  gap: 20px;
+
+  .nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    border-bottom: 2px solid transparent;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-bottom-color: white;
+    }
+  }
 }
 
 .locale-select {
@@ -96,59 +122,40 @@ header {
   background: rgba(255, 255, 255, 0.15);
   color: white;
   min-width: 160px;
+
+  option {
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  ::picker() {
+    border: none;
+  }
 }
 
-.locale-select option {
-  background: var(--bg);
-  color: var(--text);
-}
 
-.locale-select ::picker() {
-  border: none;
-}
 
-nav {
-  display: flex;
-  gap: 20px;
-}
 
-.nav-link {
-  color: white;
-  text-decoration: none;
-  padding: 10px 20px;
-  font-weight: 500;
-  transition: background-color 0.3s;
-  border-bottom: 2px solid transparent;
-}
-
-.nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.nav-link.active {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-bottom-color: white;
-}
-
-@media (max-width: 768px) {
+@media (max-width: $breakPointMedium) {
   header {
     flex-direction: column;
     gap: 15px;
     align-items: flex-start;
-  }
 
-  header h1 {
-    font-size: 24px;
-  }
+    h1 {
+      font-size: 24px;
+    }
 
-  nav {
-    width: 100%;
-    gap: 10px;
-  }
+    nav {
+      width: 100%;
+      gap: 10px;
+      display: flex;
+    }
 
-  .nav-link {
-    flex: 1;
-    text-align: center;
+    .nav-link {
+      flex: 1;
+      text-align: center;
+    }
   }
 
   main {
