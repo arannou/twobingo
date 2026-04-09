@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     /** Find old users */
     List<User> findByCreatedAtBefore(java.time.LocalDateTime date);
 
+    Optional<User> findByConnectionToken(String token);
+
 }

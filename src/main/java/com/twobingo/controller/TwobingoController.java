@@ -50,9 +50,25 @@ public class TwobingoController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/users")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
+    @PostMapping("/users/register")
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        try {
+            if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Username is required"));
+            }
+            if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Password is required"));
+            }
+            return new ResponseEntity<>(Map.of("username", user.getUsername(), "avatarImagePath",
+                    user.getAvatarImagePath(), "connectionToken", user.getConnectionToken()), HttpStatus.CREATED);
+        } catch (RuntimeException ex) {
+            System.err.println("Error creating user: " + ex.getMessage());
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", ex.getMessage()));
+        }
     }
 
     @PutMapping("/users/{id}")
@@ -133,32 +149,35 @@ public class TwobingoController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        Optional<String> token = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
-        if (token.isPresent()) {
-            return ResponseEntity.ok(Map.of("connectionToken", token.get()));
+    @PostMapping("/users/login")
+    public ResponseEntity<?> login(@RequestBody User loginRequest) {
+        System.out.println("Login attempt for username: " + loginRequest.getUsername());
+        Optional<User> userOpt = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            return ResponseEntity.ok(Map.of("username", user.getUsername(), "avatarImagePath",
+                    user.getAvatarImagePath(), "connectionToken", user.getConnectionToken()));
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
     }
 
     // logout endpoint to invalidate the token
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String username) {
-        userService.logout(username);
+    @PostMapping("/users/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
+        userService.logout(token);
         return ResponseEntity.ok("Logged out successfully");
     }
 
     // is token valid endpoint to check if the token is valid
-    @GetMapping("/validate-token/{username}")
-    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token,
-            @PathVariable String username) {
-        boolean isValid = userService.validateToken(username, token);
-        if (!isValid) {
+    @PostMapping("/validate-token")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
+        Optional<User> userOpt = userService.validateToken(token);
+        if (!userOpt.isPresent()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
-        return ResponseEntity.ok("Token is valid");
+        User user = userOpt.get();
+        return ResponseEntity.ok(Map.of("username", user.getUsername(), "avatarImagePath", user.getAvatarImagePath()));
     }
 
     /**

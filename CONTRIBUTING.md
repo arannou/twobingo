@@ -14,12 +14,13 @@ podman run -d   --name postgres-container   --network pg-network   -e POSTGRES_P
 podman run -d   --name pgadmin-container   --network pg-network   -p 8080:80   -e PGADMIN_DEFAULT_EMAIL=admin@test.com   -e PGADMIN_DEFAULT_PASSWORD=admin   dpage/pgadmin4
 ```
 
-Open pgAdmin web console here: http://localhost:8080/browser/
+Open pgAdmin web console here: http://localhost:8080/browser/ and login with admin@test.com / 1234
 
 # Backend
 ## launch app locally
 ```
 mvn spring-boot:run
+or optional -DskipTests 
 ```
 Ensure it runs by visiting http://localhost:8081/api/twobingo/health
 
@@ -51,7 +52,7 @@ Ensure it works by visiting http://localhost:5173/
 
 ## Todo
 * add aria labels, titles and other accessibility features
-
+* add frontend toast notifications
 * add tests
 * add password encryption
 * add auto-clean up and management interface

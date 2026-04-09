@@ -26,10 +26,10 @@ export const useGridStore = defineStore('grid', () => {
         loading.value = true;
         error.value = null;
         try {
-            items.value = await twobingoApi.getAllItems();
+            grids.value = await twobingoApi.getAllItems();
         } catch (err) {
             error.value = err.message;
-            console.error('Error fetching items:', err);
+            console.error('Error fetching grids:', err);
         } finally {
             loading.value = false;
         }

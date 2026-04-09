@@ -137,7 +137,7 @@ class UserServiceTest {
         when(passwordEncoder.matches("password", "hashedPassword")).thenReturn(true);
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Optional<String> result = userService.login("testuser", "password");
+        Optional<User> result = userService.login("testuser", "password");
 
         assertThat(result).isPresent();
         verify(userRepository).save(user);
@@ -147,7 +147,7 @@ class UserServiceTest {
     void login_returnsEmptyForInvalidCredentials() {
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
 
-        Optional<String> result = userService.login("testuser", "password");
+        Optional<User> result = userService.login("testuser", "password");
 
         assertThat(result).isEmpty();
     }

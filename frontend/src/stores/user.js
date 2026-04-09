@@ -10,12 +10,18 @@ export const useUserStore = defineStore('user', () => {
 
 
     // Actions
-    const isUserLoggedIn = async () => {
+    const getLoggedUser = async () => {
         loading.value = true;
         error.value = null;
 
         try {
-            //to do
+            const token = localStorage.getItem('connectionToken');
+            if (!token) {
+                return null;
+            }
+            const response = await twobingoApi.validateToken(token);
+            currentUser.value = response;
+            return response;
         } catch (err) {
             error.value = err.message;
             console.error('Error getting connection', err);
@@ -24,9 +30,80 @@ export const useUserStore = defineStore('user', () => {
         }
     };
 
+    // register user
+    const register = async (username, password, repeatedPassword) => {
+        loading.value = true;
+        error.value = null;
 
+        // ensure passwords match
+        if (password !== repeatedPassword) {
+            error.value = 'Passwords do not match';
+            loading.value = false;
+            return;
+        }
 
+        // encrypt password
+        const encryptedPassword = btoa(password);
 
+        // api call
+        try {
+            const user = await twobingoApi.register(
+                username,
+                encryptedPassword
+            );
+            currentUser.value = user;
+            localStorage.setItem('connectionToken', user.connectionToken);
+        } catch (err) {
+            error.value = err.message;
+            console.error('Error registering user', err);
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    // login user
+    const login = async (username, password) => {
+        loading.value = true;
+        error.value = null;
+        console.log('Attempting to log in user:', username);
+        // encrypt password
+        const encryptedPassword = btoa(password);
+        try {
+            const user = await twobingoApi.login(
+                username,
+                encryptedPassword
+            );
+            currentUser.value = user;
+            localStorage.setItem('connectionToken', user.connectionToken);
+            return user;
+        } catch (err) {
+            error.value = err.message;
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    // logout user
+    const logout = async () => {
+        loading.value = true;
+        error.value = null;
+
+        try {
+            const token = localStorage.getItem('connectionToken');
+            if (!token) {
+                return false;
+            }
+            await twobingoApi.logout(token);
+
+        } catch (err) {
+            error.value = err.message;
+        } finally {
+            loading.value = false;
+            currentUser.value = {};
+            localStorage.removeItem('connectionToken');
+        }
+
+    };
 
     return {
         // State
@@ -38,7 +115,10 @@ export const useUserStore = defineStore('user', () => {
 
 
         // Actions
-        isUserLoggedIn
+        getLoggedUser,
+        register,
+        login,
+        logout
 
     };
 });

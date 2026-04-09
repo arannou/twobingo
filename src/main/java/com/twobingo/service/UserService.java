@@ -30,6 +30,14 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    List<String> AVATARS = List.of(
+            "butter.svg",
+            "coral.svg",
+            "lila.svg",
+            "mint.svg",
+            "peach.svg",
+            "sky.svg");
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -42,7 +50,27 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    public Optional<User> getUserByConnectionToken(String token) {
+        return userRepository.findByConnectionToken(token);
+    }
+
     public User createUser(User user) {
+        if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+            throw new RuntimeException("Username cannot be empty");
+        }
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+            throw new RuntimeException("Password cannot be empty");
+        }
+
+        Optional<User> existingUser = userRepository.findByUsername(user.getUsername());
+        if (existingUser.isPresent()) {
+            throw new RuntimeException("User already exists with username: " + user.getUsername());
+        }
+
+        String token = UUID.randomUUID().toString();
+        user.setConnectionToken(token); // created user is auto connected
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setAvatarImagePath(getRandomAvatar());
         return userRepository.save(user);
     }
 
@@ -92,7 +120,7 @@ public class UserService {
 
     }
 
-    public Optional<String> login(String username, String password) {
+    public Optional<User> login(String username, String password) {
         Optional<User> userOpt = getUserByUsername(username);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
@@ -100,15 +128,15 @@ public class UserService {
                 String token = UUID.randomUUID().toString();
                 user.setConnectionToken(token);
                 userRepository.save(user);
-                return Optional.of(token);
+                return Optional.of(user);
             }
         }
         return Optional.empty();
     }
 
     // logout method to invalidate the token
-    public void logout(String username) {
-        Optional<User> userOpt = getUserByUsername(username);
+    public void logout(String token) {
+        Optional<User> userOpt = getUserByConnectionToken(token);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             user.setConnectionToken(null);
@@ -117,18 +145,23 @@ public class UserService {
     }
 
     // validateToken
-    public boolean validateToken(String username, String token) {
-        Optional<User> userOpt = getUserByUsername(username);
+    public Optional<User> validateToken(String token) {
+        Optional<User> userOpt = getUserByConnectionToken(token);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             if (token.equals(user.getConnectionToken())) {
-                return true;
+                return userOpt;
             } else {
                 user.setConnectionToken(null);
                 userRepository.save(user);
-                return false;
+                return Optional.empty();
             }
         }
-        return false;
+        return Optional.empty();
+    }
+
+    private String getRandomAvatar() {
+        int index = (int) (Math.random() * AVATARS.size());
+        return AVATARS.get(index);
     }
 }
