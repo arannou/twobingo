@@ -44,11 +44,12 @@ Ensure it works by visiting http://localhost:5173/
 ## Done
 * create backend and basic api
 * create frontend and basic ui
-* add avatar feature
 
 
 ## In progress
-* add edition and deletion feature in frontend
+* create grid
+* edit and delete grids
+* add participants
 
 ## Todo
 * add aria labels, titles and other accessibility features

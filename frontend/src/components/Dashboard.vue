@@ -78,7 +78,7 @@ const { t } = useI18n()
 
 
 const navigateToCreate = () => {
-  router.push('/create-item')
+  router.push('/grid-creator')
 }
 
 const loadGrids = async () => {

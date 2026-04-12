@@ -10,9 +10,15 @@ const routes = [
         component: Dashboard,
     },
     {
+        path: '/grid-creator',
+        name: 'GridCreator',
+        component: GridEditor,
+    },
+    {
         path: '/grid-editor',
         name: 'GridEditor',
         component: GridEditor,
+        props: route => ({ gridId: route.query.gridId }),
     },
     {
         path: '/login',
