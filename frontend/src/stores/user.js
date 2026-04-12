@@ -19,6 +19,10 @@ export const useUserStore = defineStore('user', () => {
             if (!token) {
                 return null;
             }
+            if (token == 'undefined') {
+                localStorage.removeItem('connectionToken');
+                return null;
+            }
             const response = await twobingoApi.validateToken(token);
             currentUser.value = response;
             return response;
@@ -32,6 +36,10 @@ export const useUserStore = defineStore('user', () => {
 
     // register user
     const register = async (username, password, repeatedPassword) => {
+        if (!username || !password || !repeatedPassword) {
+            error.value = 'All fields are required';
+            return;
+        }
         loading.value = true;
         error.value = null;
 
@@ -63,9 +71,13 @@ export const useUserStore = defineStore('user', () => {
 
     // login user
     const login = async (username, password) => {
+        if (!username || !password) {
+            error.value = 'Username and password are required';
+            return;
+        }
         loading.value = true;
         error.value = null;
-        console.log('Attempting to log in user:', username);
+
         // encrypt password
         const encryptedPassword = btoa(password);
         try {
@@ -73,10 +85,12 @@ export const useUserStore = defineStore('user', () => {
                 username,
                 encryptedPassword
             );
+            console.log('User logged in:', user);
             currentUser.value = user;
             localStorage.setItem('connectionToken', user.connectionToken);
             return user;
         } catch (err) {
+            console.error('Error logging in user:', err);
             error.value = err.message;
         } finally {
             loading.value = false;

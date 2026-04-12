@@ -14,7 +14,7 @@ const { t } = useI18n()
 
 
 onMounted(() => {
-  gridStore.isUserLoggedIn()
+  gridStore.getLoggedUser()
 })
 </script>
 

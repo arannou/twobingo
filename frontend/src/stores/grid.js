@@ -22,11 +22,12 @@ export const useGridStore = defineStore('grid', () => {
     // });
 
     // Actions
-    const fetchAll = async () => {
+    const fetchForUser = async () => {
         loading.value = true;
         error.value = null;
+
         try {
-            grids.value = await twobingoApi.getAllItems();
+            grids.value = await twobingoApi.getGridsForUser();
         } catch (err) {
             error.value = err.message;
             console.error('Error fetching grids:', err);
@@ -36,71 +37,71 @@ export const useGridStore = defineStore('grid', () => {
     };
 
 
-    const fetchItemById = async (id) => {
+    const fetchGridById = async (id) => {
         loading.value = true;
         error.value = null;
         try {
-            selectedItem.value = await inventoryApi.getItemById(id);
+            selectedGrid.value = await twobingoApi.getGridById(id);
         } catch (err) {
             error.value = err.message;
-            console.error('Error fetching item:', err);
+            console.error('Error fetching grid:', err);
         } finally {
             loading.value = false;
         }
     };
 
 
-    const createItem = async (itemData) => {
+    const createGrid = async (gridData) => {
         loading.value = true;
         error.value = null;
         try {
-            const newItem = await inventoryApi.createItem(itemData);
-            items.value.push(newItem);
-            return newItem;
+            const newGrid = await twobingoApi.createGrid(gridData);
+            grids.value.push(newGrid);
+            return newGrid;
         } catch (err) {
             error.value = err.message;
-            console.error('Error creating item:', err);
+            console.error('Error creating grid:', err);
             throw err;
         } finally {
             loading.value = false;
         }
     };
 
-    const updateItem = async (id, itemData) => {
+    const updateGrid = async (id, gridData) => {
         loading.value = true;
         error.value = null;
         try {
-            const updatedItem = await inventoryApi.updateItem(id, itemData);
-            const index = items.value.findIndex((item) => item.id === id);
+            const updatedGrid = await twobingoApi.updateGrid(id, gridData);
+            const index = grids.value.findIndex((grid) => grid.id === id);
             if (index !== -1) {
-                items.value[index] = updatedItem;
+                grids.value[index] = updatedGrid;
             }
-            if (selectedItem.value && selectedItem.value.id === id) {
-                selectedItem.value = updatedItem;
+            if (selectedGrid.value && selectedGrid.value.id === id) {
+                selectedGrid.value = updatedGrid;
             }
-            return updatedItem;
+            return updatedGrid;
         } catch (err) {
             error.value = err.message;
-            console.error('Error updating item:', err);
+            console.error('Error updating grid:', err);
             throw err;
         } finally {
             loading.value = false;
         }
     };
 
-    const deleteItem = async (id) => {
+    const deleteGrid = async (id) => {
         loading.value = true;
         error.value = null;
         try {
-            await inventoryApi.deleteItem(id);
-            items.value = items.value.filter((item) => item.id !== id);
-            if (selectedItem.value && selectedItem.value.id === id) {
-                selectedItem.value = null;
+            await twobingoApi.deleteGrid(id);
+            grids.value = grids.value.filter((grid) => grid.id !== id);
+            if (selectedGrid.value && selectedGrid.value.id === id) {
+                selectedGrid.value = null;
             }
             return true;
         } catch (err) {
             error.value = err.message;
-            console.error('Error deleting item:', err);
+            console.error('Error deleting grid:', err);
             throw err;
         } finally {
             loading.value = false;
@@ -119,12 +120,12 @@ export const useGridStore = defineStore('grid', () => {
         // Computed
 
         // Actions
-        fetchAll,
-        fetchItemById,
+        fetchForUser,
+        fetchGridById,
 
-        createItem,
-        updateItem,
-        deleteItem,
+        createGrid,
+        updateGrid,
+        deleteGrid,
 
     };
 });

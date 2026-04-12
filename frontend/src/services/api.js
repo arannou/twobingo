@@ -1,13 +1,8 @@
+
 // API Service for Backend Communication
 const API_BASE_URL = 'http://localhost:8081/api/twobingo';
 
 export const twobingoApi = {
-    // Get all
-    async getAllItems() {
-        const response = await fetch(`${API_BASE_URL}`);
-        if (!response.ok) throw new Error('Failed to fetch items');
-        return response.json();
-    },
 
     // user login
     async login(username, password) {
@@ -16,7 +11,15 @@ export const twobingoApi = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),
         });
-        if (!response.ok) throw new Error('Login failed');
+
+
+        if (!response.ok) {
+            const reponseText = await response.text();
+            if (!reponseText) {
+                reponseText = 'Login failed';
+            }
+            throw new Error(reponseText);
+        }
         return response.json();
     },
 
@@ -52,6 +55,56 @@ export const twobingoApi = {
             headers: { 'Authorization': `${token}` }
         });
         if (!response.ok) throw new Error('Token validation failed');
+        return response.json();
+    },
+
+
+    /* -------------- GRIDS --------------*/
+
+    async getGridsForUser() {
+        const response = await fetch(`${API_BASE_URL}/grids/user`, {
+            headers: { 'Authorization': `${localStorage.getItem('connectionToken')}` }
+        });
+        if (!response.ok) throw new Error('Failed to fetch grids');
+        return response.json();
+    },
+
+    async getGridById(id) {
+        const response = await fetch(`${API_BASE_URL}/grids/${id}`, {
+            headers: { 'Authorization': `${localStorage.getItem('connectionToken')}` }
+        });
+        if (!response.ok) throw new Error('Failed to fetch grid');
+        return response.json();
+    },
+
+    async createGrid(gridData) {
+        const response = await fetch(`${API_BASE_URL}/grids`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Authorization': `${localStorage.getItem('connectionToken')}` },
+            body: JSON.stringify(gridData),
+        });
+        if (!response.ok) throw new Error('Failed to create grid');
+        return response.json();
+    },
+
+    async updateGrid(id, gridData) {
+        const response = await fetch(`${API_BASE_URL}/grids/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Authorization': `${localStorage.getItem('connectionToken')}` },
+            body: JSON.stringify(gridData),
+        });
+        if (!response.ok) throw new Error('Failed to update grid');
+        return response.json();
+    },
+
+    async deleteGrid(id) {
+        const response = await fetch(`${API_BASE_URL}/grids/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `${localStorage.getItem('connectionToken')}` },
+        });
+        if (!response.ok) throw new Error('Failed to delete grid');
         return response.json();
     }
 

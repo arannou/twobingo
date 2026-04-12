@@ -2,36 +2,38 @@
   <div class="dashboard">
 
     <!-- Status Messages -->
-    <div v-if="store.error" class="error-message">
-      <p>{{ store.error }}</p>
-      <!-- <button @click="store.clearError">Dismiss</button> -->
+    <div v-if="gridStore.error" class="banner error-message">
+      <p>{{ gridStore.error }}</p>
+    </div>
+    <div v-if="!userStore.currentUser.username" class="banner info-message">
+      <p>{{ t('dashboard.connectToCreateGrids') }}</p>
     </div>
 
-    <div v-if="store.loading" class="loading-message">
-      <p>loadingmessage</p>
+    <div v-if="gridStore.loading" class="banner loading-message">
+      <p>{{ t('dashboard.loading') }}</p>
     </div>
 
     <!-- Controls -->
-    <div class="controls">
+    <div v-if="userStore.currentUser.username" class="controls">
       <button @click="navigateToCreate" class="primary">
-        ➕ create
+        ➕ {{ t('dashboard.create') }}
       </button>
-      <button @click="store.fetchAll" :disabled="store.loading">
-        refresh
+      <button @click="loadGrids" :disabled="gridStore.loading">
+        {{ t('dashboard.refresh') }}
       </button>
     </div>
 
 
     <!-- Filters -->
-    <div class="filter-section">
-      <!-- <div>
+    <div v-if="userStore.currentUser.username" class="filter-section">
+      <div>
         <label>
           <input
             type="checkbox"
-            v-model="store.filterOwner"
-            @change="store.toggleOwnerFilter"
+            v-model="gridStore.filterOwner"
+            @change="gridStore.toggleOwnerFilter"
           />
-          Owner Only
+          {{ t('dashboard.ownerOnly') }}
         </label>
       </div>
 
@@ -39,22 +41,22 @@
         <label>
           <input
             type="checkbox"
-            v-model="store.filterArchived"
-            @change="store.toggleArchivedFilter"
+            v-model="gridStore.filterArchived"
+            @change="gridStore.toggleArchivedFilter"
           />
-          Archived Items
+          {{ t('dashboard.archivedItems') }}
         </label>
-      </div> -->
+      </div>
     </div>
 
 
     <!-- Items List -->
-    <div v-if="store.grids.length > 0" class="grid-list">
+    <div v-if="gridStore.grids.length > 0" class="grid-list">
 
     </div>
 
     <div v-else class="no-items">
-      <p>No item found</p>
+      <p>{{ t('dashboard.noItems') }}</p>
     </div>
   </div>
 </template>
@@ -62,12 +64,14 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { useGridStore } from '../stores/grid'
+import { useUserStore } from '../stores/user'
 import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 
 const router = useRouter()
-const store = useGridStore()
+const gridStore = useGridStore()
+const userStore = useUserStore()
 const { t } = useI18n()
 
 
@@ -77,9 +81,28 @@ const navigateToCreate = () => {
   router.push('/create-item')
 }
 
+const loadGrids = async () => {
+  if (userStore.currentUser.username) {
+    gridStore.fetchForUser()
+  } else {
+    let lsGrids = localStorage.getItem('grids')
+    if (lsGrids) {
+      try {
+        const parsedGrids = JSON.parse(lsGrids)
+        gridStore.grids = parsedGrids
+      } catch (e) {
+        console.error('Failed to parse grids from localStorage:', e)
+        gridStore.grids = []
+      }
+    } else {
+      gridStore.grids = []
+    }
+  }
+}
+
 // Load items on component mount
 onMounted(() => {
-  store.fetchAll()
+  loadGrids()
 })
 </script>
 
@@ -90,34 +113,6 @@ onMounted(() => {
   font-family: Arial, sans-serif;
 }
 
-
-.error-message {
-  background-color: #fee;
-  border: 1px solid #f00;
-  color: #f00;
-  padding: 15px;
-  border-radius: 4px;
-  margin-bottom: 20px;
-}
-
-.error-message button {
-  background-color: #f00;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 3px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.loading-message {
-  background-color: #ffe;
-  border: 1px solid #ff0;
-  color: #ff0;
-  padding: 15px;
-  border-radius: 4px;
-  margin-bottom: 20px;
-}
 
 .controls {
   display: flex;
@@ -161,17 +156,6 @@ onMounted(() => {
   font-size: 12px;
 }
 
-.search-section {
-  margin-bottom: 20px;
-}
-
-.search-section input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
 
 .filter-section {
   display: flex;
@@ -188,62 +172,7 @@ onMounted(() => {
   cursor: pointer;
 }
 
-.stats {
-  display: flex;
-  gap: 30px;
-  margin-bottom: 20px;
-  padding: 15px;
-  background-color: var(--bg-highlight);
-  border-radius: 4px;
-}
 
-.stats p {
-  margin: 0;
-}
-
-.items-list {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-thead {
-  font-weight: bold;
-}
-
-th,
-td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-th {
-  background-color: var(--secondary);
-  color: white;
-  font-weight: bold;
-}
-tr {
-    background-color: var(--bg-highlight);
-}
-tr:hover {
-  filter: brightness(105%);
-}
-
-tr:last-child td {
-  border-bottom: none;
-}
-
-.low-stock {
-  color: #f00;
-  font-weight: bold;
-}
 
 .no-items {
   text-align: center;

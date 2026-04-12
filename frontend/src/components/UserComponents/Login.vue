@@ -41,8 +41,9 @@ const register = () => {
     }
     })
 }
-onMounted(() => {
 
+onMounted(() => {
+    userStore.error = null; // Clear any previous errors
     userStore.getLoggedUser().then((user) => {
         if (user) {
             isloggedIn.value = true;
@@ -60,7 +61,7 @@ onMounted(() => {
         <template v-if="mode === 'login'">
             <a href="#" @click="router.push('/register')">{{ t('login.noAccount') }}</a>
             <input v-model="username" type="text" :placeholder="t('login.username')" />
-            <input v-model="password" type="password" :placeholder="t('login.password')" />
+            <input v-model="password" type="password" :placeholder="t('login.password')" @keydown.enter="login()" />
             <div class="button-group">
                 <button class="primary" @click="login()">{{ t('login.login') }}</button>
                 <button @click="router.push('/')">{{ t('login.cancel') }}</button>
@@ -69,7 +70,7 @@ onMounted(() => {
         <template v-else>
             <a href="#" @click="router.push('/login')">{{ t('login.haveAccount') }}</a>
             <input v-model="username" name="username" type="text" :placeholder="t('login.username')" />
-            <input v-model="password" name="password" type="password" :placeholder="t('login.password')" />
+            <input v-model="password" name="password" type="password" :placeholder="t('login.password')" @keydown.enter="register()"/>
             <input v-model="repeatedPassword" name="repeatedPassword" type="password" :placeholder="t('login.repeatPassword')" />
 
             <div class="button-group">
@@ -78,7 +79,7 @@ onMounted(() => {
             </div>
             
         </template>
-        <div v-if="userStore.error" class="error">{{ userStore.error }}</div>
+        <div v-if="userStore.error" class="banner error-message">{{ userStore.error }}</div>
     </div>
 
   </div>

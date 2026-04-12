@@ -21,7 +21,6 @@ const logout = () => {
 }
 
 const closeDropdown = (evt) => {
-  console.log('Focus out event:', evt.relatedTarget, evt.currentTarget);
     if (!evt.currentTarget.contains(evt.relatedTarget)) {
         isDropdownOpen.value = false;
     }

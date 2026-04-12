@@ -104,7 +104,7 @@ public class TwobingoController {
     // management, etc.
 
     @GetMapping("/grids")
-    public ResponseEntity<List<Grid>> getAllGrids() {
+    public ResponseEntity<List<Grid>> getAllGrids(@RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(gridService.getAllGrids());
     }
 

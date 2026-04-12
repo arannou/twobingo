@@ -133,6 +133,25 @@ nav {
   }
 }
 
+.banner {
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+.error-message {
+  background-color: var(--red);
+
+}
+
+.loading-message {
+  background-color: var(--yellow);
+  color: #08060d;
+}
+
+.info-message {
+  background-color: var(--info);
+}
+
 
 
 
