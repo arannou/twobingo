@@ -87,7 +87,7 @@ onMounted(() => {
 
 <style lang="scss">
 
-@import "./../../variables.scss";
+@use "./../../variables.scss";
 
 .login-view .form {
     display: flex;
@@ -103,7 +103,7 @@ onMounted(() => {
     }
 }
 
-@media (max-width:  $breakPointMedium) {
+@media (max-width:  variables.$breakPointMedium) {
     .login-view .form {
         width: 80%;
     }

@@ -59,7 +59,7 @@ onMounted(() => {
 
 <style lang="scss">
 
-@import "variables.scss";
+@use "variables";
 * {
   margin: 0;
   padding: 0;
@@ -155,7 +155,7 @@ nav {
 
 
 
-@media (max-width: $breakPointMedium) {
+@media (max-width: variables.$breakPointMedium) {
   header {
     flex-direction: column;
     gap: 15px;
