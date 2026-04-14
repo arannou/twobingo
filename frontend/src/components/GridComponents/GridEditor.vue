@@ -16,7 +16,7 @@ const mode = route.query.gridId ? 'edit' : 'create'
 // props: gridId (optional, for editing existing grid)
 const gridId = route.query.gridId
 
-
+const error = ref(null)
 
 const THEMES = ['round', 'square']
 const COLORS = [
@@ -52,23 +52,67 @@ onBeforeMount(() => {
   if (gridId) {
     gridStore.loadGrid(gridId)
   }
-
 })
+
+const handleCellUpdate = (cellIndex, content) => {
+    if (!editedGrid.value) return;
+    if (!editedGrid.value.cells) {
+        editedGrid.value.cells = [];
+        editedGrid.value.cells.push({ content: content, checked: false, position: cellIndex });
+        return;
+    }
+    const updatedCell = editedGrid.value.cells.filter(cell => cell.position === cellIndex)[0];
+    if (updatedCell) {
+        updatedCell.content = content;
+        return;
+    }
+}
+
+const validateGrid = () => {
+  error.value = null
+  if (!editedGrid.value.gridName) {
+    error.value = 'Please enter a grid name'
+    return false
+  }
+  if (editedGrid.value.gridSize < 3 || editedGrid.value.gridSize > 5) {
+    error.value = 'Grid size must be between 3 and 5'
+    return false
+  }
+  if (!editedGrid.value.cells) {
+    error.value = 'Grid must have at least one cell'
+    return false
+  }
+  return true
+}
+const submit = () => {
+  if (!validateGrid()) {
+    return
+  }
+  if (mode === 'create') {
+    gridStore.createGrid(editedGrid.value).then(() => {
+      router.push('/')
+    })
+  } else if (mode === 'edit') {
+    gridStore.updateGrid(gridId, editedGrid.value).then(() => {
+      router.push('/')
+    })
+  }
+}
 </script>
 
 <template>
   <div class="grid-editor">
     <div class="form">
       <div class="name-input">
-        <label for="grid-name">Grid Name:</label>
+        <label for="grid-name">Grid Name</label>
         <input type="text" name="grid-name" id="grid-name" v-model="editedGrid.gridName" placeholder="Grid Name" />
       </div>
       <div class="description-input">
-        <label for="grid-description">Description:</label>
+        <label for="grid-description">Description</label>
         <textarea name="grid-description" id="grid-description" v-model="editedGrid.gridDescription" placeholder="Grid Description"></textarea>
       </div>
       <div class="size-selection">
-        <label for="grid-size">Size:</label>
+        <label for="grid-size">Size</label>
         <select name="grid-size" id="grid-size" v-model="editedGrid.gridSize">
           <option value="3">3x3</option>
           <option value="4">4x4</option>
@@ -76,7 +120,7 @@ onBeforeMount(() => {
         </select>
       </div>
       <div class="theme-selection">
-        <label for="grid-theme">Theme:</label>
+        <label for="grid-theme">Theme</label>
         <select name="grid-theme" id="grid-theme" v-model="editedGrid.gridTheme">
           <option v-for="theme in THEMES" :value="theme">
             {{ theme }}
@@ -84,21 +128,28 @@ onBeforeMount(() => {
         </select>
       </div>
       <div class="color-selection">
-        <label for="grid-color">Color:</label>
+        <label for="grid-color">Color</label>
         <select name="grid-color" id="grid-color" v-model="editedGrid.gridColor">
           <option v-for="color in COLORS" :value="color">
             {{ color.name }}
           </option>
         </select>
       </div>
-  </div>
+
+      <div class="button-group">
+        <button type="submit" class="primary" @click="submit()">Save</button>
+        <button type="submit" @click="router.push('/')">Cancel</button>
+      </div>
+      <div v-if="error" class="banner error-message">{{ error }}</div>
+
+    </div>
 
     <div class="preview">
       <h3>Preview</h3>
       <div class="grid-preview" :class="'theme-' +editedGrid.gridTheme" >
         <div class="grid-container" :class="'size-' +editedGrid.gridSize + ' color-' + editedGrid.gridColor.name.toLowerCase().replace(/\s/g, '-')">
         <div v-for="n in parseInt(editedGrid.gridSize)*parseInt(editedGrid.gridSize)" :key="'row-' + n" class="grid-cell">
-            <CellComponent :index="n" />
+            <CellComponent :index="n" @update:cell="(content)  => handleCellUpdate(n, content)"/>
         </div>
         </div>
       </div>
@@ -110,6 +161,24 @@ onBeforeMount(() => {
 </template>
 
 <style lang="scss">
+
+.grid-editor {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  height: 100%;
+
+  .form {
+    background-color: var(--bg-highlight);
+    height: 100%;
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+  }
+}
+
 
 .grid-preview {
   display: flex;

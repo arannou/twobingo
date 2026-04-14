@@ -9,6 +9,9 @@ export const useGridStore = defineStore('grid', () => {
     const loading = ref(false);
     const error = ref(null);
 
+    const updateCellContent = (cellIndex, content) => {
+
+    };
 
 
     // const categories = computed(() => {
@@ -120,6 +123,8 @@ export const useGridStore = defineStore('grid', () => {
         // Computed
 
         // Actions
+        updateCellContent,
+
         fetchForUser,
         fetchGridById,
 

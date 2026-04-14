@@ -78,10 +78,14 @@ export const twobingoApi = {
     },
 
     async createGrid(gridData) {
+        const token = localStorage.getItem('connectionToken');
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
         const response = await fetch(`${API_BASE_URL}/grids`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            headers: { 'Authorization': `${localStorage.getItem('connectionToken')}` },
+            headers: { 'Authorization': `${token}` },
             body: JSON.stringify(gridData),
         });
         if (!response.ok) throw new Error('Failed to create grid');
@@ -89,10 +93,14 @@ export const twobingoApi = {
     },
 
     async updateGrid(id, gridData) {
+        const token = localStorage.getItem('connectionToken');
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
         const response = await fetch(`${API_BASE_URL}/grids/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            headers: { 'Authorization': `${localStorage.getItem('connectionToken')}` },
+            headers: { 'Authorization': `${token}` },
             body: JSON.stringify(gridData),
         });
         if (!response.ok) throw new Error('Failed to update grid');
@@ -100,9 +108,14 @@ export const twobingoApi = {
     },
 
     async deleteGrid(id) {
+        const token = localStorage.getItem('connectionToken');
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+
         const response = await fetch(`${API_BASE_URL}/grids/${id}`, {
             method: 'DELETE',
-            headers: { 'Authorization': `${localStorage.getItem('connectionToken')}` },
+            headers: { 'Authorization': `${token}` },
         });
         if (!response.ok) throw new Error('Failed to delete grid');
         return response.json();
