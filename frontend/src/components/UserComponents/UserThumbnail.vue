@@ -50,7 +50,7 @@ onMounted(() => {
     </div>
     <!-- dropdown -->
     <div class="user-dropdown" @focusout="evt => closeDropdown(evt)">
-        <button class="dropdown-toggle" @click="toggleDropdown">{{isDropdownOpen ? '▲' : '▼'}}</button>
+        <button class="dropdown-toggle small" @click="toggleDropdown">{{isDropdownOpen ? '▲' : '▼'}}</button>
         <div class="dropdown-menu" v-show="isDropdownOpen" @click="isDropdownOpen = false" >
             <template v-if="!store.currentUser.username">
                 <a href="#" class="dropdown-item" @click="router.push('/login')">{{ t('userThumbnail.login') }}</a>

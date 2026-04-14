@@ -1,0 +1,30 @@
+button {
+    background-color: var(--secondary);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover:not(:disabled) {
+    filter: brightness(110%);
+}
+
+button:disabled {
+    filter: brightness(80%);
+    cursor: not-allowed;
+}
+
+button.small {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin: 20px;
+    flex-wrap: wrap;
+}

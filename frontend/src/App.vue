@@ -60,6 +60,7 @@ onMounted(() => {
 <style lang="scss">
 
 @use "variables";
+
 * {
   margin: 0;
   padding: 0;
@@ -72,9 +73,18 @@ body {
   min-height: 100vh;
 }
 
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
 
 header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+main {
+  flex-grow: 2;
 }
 
 .app-header {

@@ -14,7 +14,7 @@
     </div>
 
     <!-- Controls -->
-    <div v-if="userStore.currentUser.username" class="controls">
+    <div v-if="userStore.currentUser.username" class="button-group">
       <button @click="navigateToCreate" class="primary">
         ➕ {{ t('dashboard.create') }}
       </button>
@@ -112,35 +112,6 @@ onMounted(() => {
   padding: 20px;
   font-family: Arial, sans-serif;
 }
-
-
-.controls {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.controls button {
-  background-color: var(--secondary);
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.controls button:hover:not(:disabled) {
-  filter: brightness(110%);
-}
-
-.controls button:disabled {
-  filter: brightness(80%);
-  cursor: not-allowed;
-}
-
-
 
 .item-image {
   width: 60px;
