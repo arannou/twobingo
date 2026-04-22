@@ -8,6 +8,9 @@
     <div v-if="!userStore.currentUser.username" class="banner info-message">
       <p>{{ t('dashboard.connectToCreateGrids') }}</p>
     </div>
+      <div class="banner info-message">
+      <p>Online : {{ isOnline }}</p>
+    </div>
 
     <div v-if="gridStore.loading" class="banner loading-message">
       <p>{{ t('dashboard.loading') }}</p>
@@ -52,7 +55,12 @@
 
     <!-- Items List -->
     <div v-if="gridStore.grids.length > 0" class="grid-list">
-
+      <GridCard
+        v-for="grid in gridStore.grids"
+        :key="grid.id"
+        :grid="grid"
+      >
+      </GridCard>
     </div>
 
     <div v-else class="no-items">
@@ -65,8 +73,9 @@
 import { useRouter } from 'vue-router'
 import { useGridStore } from '../stores/grid'
 import { useUserStore } from '../stores/user'
-import { onMounted } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import GridCard from './GridComponents/GridCard.vue'
 
 
 const router = useRouter()
@@ -74,7 +83,7 @@ const gridStore = useGridStore()
 const userStore = useUserStore()
 const { t } = useI18n()
 
-
+const isOnline = ref(sessionStorage.getItem("twobingo:online") === "true")
 
 
 const navigateToCreate = () => {
@@ -104,6 +113,8 @@ const loadGrids = async () => {
 onMounted(() => {
   loadGrids()
 })
+
+watch(userStore.currentUser.username, () => loadGrids())
 </script>
 
 <style scoped>
@@ -149,5 +160,11 @@ onMounted(() => {
   text-align: center;
   padding: 40px;
   border-radius: 4px;
+}
+
+.grid-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 </style>

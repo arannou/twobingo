@@ -11,10 +11,8 @@ const route = useRoute()
 const userStore = useUserStore()
 const gridStore = useGridStore()
 const { t } = useI18n()
-const mode = route.query.gridId ? 'edit' : 'create'
+const mode = ref('create')
 
-// props: gridId (optional, for editing existing grid)
-const gridId = route.query.gridId
 
 const error = ref(null)
 
@@ -48,10 +46,22 @@ const editedGrid = ref({
   })
 
 onBeforeMount(() => {
-  console.log('GridEditor mounted with gridId:', gridId)
-  if (gridId) {
-    gridStore.loadGrid(gridId)
-  }
+  if (gridStore.selectedGrid?.id) {
+      mode.value = 'edit'
+      console.log('Using selectedGrid from store for editing', gridStore.selectedGrid)
+      editedGrid.value = { ...gridStore.selectedGrid };
+      // find color object from COLORS array that matches the gridColor name
+      const colorObj = COLORS.find(color => color.name === gridStore.selectedGrid.gridColor)
+      if (colorObj) {
+        editedGrid.value.gridColor = colorObj;
+      } else {
+        editedGrid.value.gridColor = COLORS[0];
+      }
+
+    } else {
+      mode.value = 'create'
+    }
+  
 })
 
 const handleCellUpdate = (cellIndex, cellData) => {
@@ -91,12 +101,12 @@ const submit = () => {
   if (!editedGrid.value.gridColor) {
     editedGrid.value.gridColor = COLORS[0]
   }
-  if (mode === 'create') {
+  if (mode.value === 'create') {
     gridStore.createGrid(editedGrid.value).then(() => {
       router.push('/')
     })
-  } else if (mode === 'edit') {
-    gridStore.updateGrid(gridId, editedGrid.value).then(() => {
+  } else if (mode.value === 'edit') {
+    gridStore.updateGrid(gridStore.selectedGrid.id, editedGrid.value).then(() => {
       router.push('/')
     })
   }

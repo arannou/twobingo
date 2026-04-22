@@ -2,6 +2,7 @@
 import { useRouter, useRoute } from 'vue-router'
 import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { twobingoApi } from './services/api';
 
 import UserThumbnail from './components/UserComponents/UserThumbnail.vue'
 
@@ -26,6 +27,7 @@ const loadLocale = () => {
 }
 
 onMounted(() => {
+  twobingoApi.healthCheck()
   loadLocale()
 })
 </script>

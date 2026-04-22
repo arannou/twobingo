@@ -12,7 +12,8 @@ const { t } = useI18n()
 const props = defineProps({
   cellId: String,
   gridId: String,
-  index: Number
+  index: Number,
+  content: String
 })
 
 const emit = defineEmits(['update:cell'])
@@ -33,7 +34,6 @@ onMounted(() => {
 
 const editCell = () => {
   mode.value = 'edit'
-  console.log(editInput.value)
   // wait vue netxtick
   nextTick(() => {
     editInput.value.focus()

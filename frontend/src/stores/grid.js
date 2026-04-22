@@ -13,7 +13,6 @@ export const useGridStore = defineStore('grid', () => {
 
     };
 
-
     // const categories = computed(() => {
     //     const cats = new Set(items.value.map((item) => item.category).filter(Boolean));
     //     return Array.from(cats).sort();

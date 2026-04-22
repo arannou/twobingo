@@ -18,7 +18,7 @@ const routes = [
         path: '/grid-editor',
         name: 'GridEditor',
         component: GridEditor,
-        props: route => ({ gridId: route.query.gridId }),
+        props: true,
     },
     {
         path: '/login',
