@@ -22,7 +22,7 @@ public class Grid {
     private Integer size;
 
     @Column(length = 100)
-    private String style;
+    private String theme;
 
     @Column(length = 50)
     private String color;
@@ -30,7 +30,7 @@ public class Grid {
     @Column(name = "is_archived")
     private Boolean isArchived = false;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,19 +46,28 @@ public class Grid {
     public Grid() {
     }
 
-    public Grid(String name, String description, Integer size, String style, String color) {
+    public Grid(String name, String description, Integer size, String color, String theme) {
         this.name = name;
         this.description = description;
         this.size = size;
-        this.style = style;
+        this.theme = theme;
         this.color = color;
     }
 
-    public Grid(String name, String description, Integer size, String style, String color, User creator) {
+    public Grid(String name, String description, Integer size, String theme, String color, List<Cell> cells) {
         this.name = name;
         this.description = description;
         this.size = size;
-        this.style = style;
+        this.theme = theme;
+        this.color = color;
+        this.cells = cells;
+    }
+
+    public Grid(String name, String description, Integer size, String color, String theme, User creator) {
+        this.name = name;
+        this.description = description;
+        this.size = size;
+        this.theme = theme;
         this.color = color;
         this.creator = creator;
     }
@@ -96,12 +105,12 @@ public class Grid {
         this.size = size;
     }
 
-    public String getStyle() {
-        return style;
+    public String getTheme() {
+        return theme;
     }
 
-    public void setStyle(String style) {
-        this.style = style;
+    public void setTheme(String theme) {
+        this.theme = theme;
     }
 
     public String getColor() {
@@ -157,4 +166,18 @@ public class Grid {
         createdAt = LocalDateTime.now();
     }
 
+    // overwrite toString for better logging
+    @Override
+    public String toString() {
+        return "Grid{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description=" + description +
+                ", createdAt=" + createdAt +
+                ", size=" + size +
+                ", theme=" + theme +
+                ", color=" + color +
+                ", creator=" + (creator != null ? creator.getUsername() : "Creator not found") +
+                '}';
+    }
 }

@@ -1,5 +1,6 @@
 package com.twobingo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -19,10 +20,14 @@ public class Cell {
     private String content;
 
     @Column(name = "is_checked")
+    @JsonProperty("checked")
     private Boolean isChecked = false;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "position")
+    private Integer position;
 
     public Cell() {
     }
@@ -72,9 +77,29 @@ public class Cell {
         this.createdAt = createdAt;
     }
 
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+    }
+
+    // overwrite toString for better logging
+    @Override
+    public String toString() {
+        return "Cell{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", isChecked=" + isChecked +
+                ", createdAt=" + createdAt +
+                ", gridId=" + (grid != null ? grid.getId() : "No Grid") +
+                '}';
     }
 
 }

@@ -18,11 +18,11 @@ public class User {
     @Column(length = 1000)
     private String avatarImagePath;
 
-    // hasehd password
+    // hashed password
     @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "connection_token")

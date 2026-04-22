@@ -27,8 +27,10 @@ export const twobingoApi = {
     async logout(token) {
         const response = await fetch(`${API_BASE_URL}/users/logout`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            headers: { 'Authorization': `${token}` },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
         });
         if (!response.ok) throw new Error('Logout failed');
         return response.json();
@@ -51,8 +53,10 @@ export const twobingoApi = {
         // authenticate with token as auth header
         const response = await fetch(`${API_BASE_URL}/validate-token`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            headers: { 'Authorization': `${token}` }
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
         });
         if (!response.ok) throw new Error('Token validation failed');
         return response.json();
@@ -63,7 +67,7 @@ export const twobingoApi = {
 
     async getGridsForUser() {
         const response = await fetch(`${API_BASE_URL}/grids/user`, {
-            headers: { 'Authorization': `${localStorage.getItem('connectionToken')}` }
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('connectionToken')}` }
         });
         if (!response.ok) throw new Error('Failed to fetch grids');
         return response.json();
@@ -71,7 +75,7 @@ export const twobingoApi = {
 
     async getGridById(id) {
         const response = await fetch(`${API_BASE_URL}/grids/${id}`, {
-            headers: { 'Authorization': `${localStorage.getItem('connectionToken')}` }
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('connectionToken')}` }
         });
         if (!response.ok) throw new Error('Failed to fetch grid');
         return response.json();
@@ -84,8 +88,10 @@ export const twobingoApi = {
         }
         const response = await fetch(`${API_BASE_URL}/grids`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            headers: { 'Authorization': `${token}` },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify(gridData),
         });
         if (!response.ok) throw new Error('Failed to create grid');
@@ -99,8 +105,10 @@ export const twobingoApi = {
         }
         const response = await fetch(`${API_BASE_URL}/grids/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            headers: { 'Authorization': `${token}` },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify(gridData),
         });
         if (!response.ok) throw new Error('Failed to update grid');
@@ -115,7 +123,7 @@ export const twobingoApi = {
 
         const response = await fetch(`${API_BASE_URL}/grids/${id}`, {
             method: 'DELETE',
-            headers: { 'Authorization': `${token}` },
+            headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!response.ok) throw new Error('Failed to delete grid');
         return response.json();

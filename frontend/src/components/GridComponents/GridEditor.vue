@@ -18,7 +18,7 @@ const gridId = route.query.gridId
 
 const error = ref(null)
 
-const THEMES = ['round', 'square']
+const THEMES = ['square','round']
 const COLORS = [
   { name: 'Black and white',
     foreground: '#fff',
@@ -40,10 +40,10 @@ const COLORS = [
 ]
 
 const editedGrid = ref({
-      gridName: '',
-      gridDescription: '',
-      gridSize: 3,
-      gridTheme: 'round',
+      name: '',
+      description: '',
+      size: 3,
+      theme: THEMES[0],
       gridColor: COLORS[0],
   })
 
@@ -54,27 +54,27 @@ onBeforeMount(() => {
   }
 })
 
-const handleCellUpdate = (cellIndex, content) => {
+const handleCellUpdate = (cellIndex, cellData) => {
     if (!editedGrid.value) return;
     if (!editedGrid.value.cells) {
         editedGrid.value.cells = [];
-        editedGrid.value.cells.push({ content: content, checked: false, position: cellIndex });
+        editedGrid.value.cells.push({ content: cellData.content, checked: false, position: cellIndex });
         return;
     }
     const updatedCell = editedGrid.value.cells.filter(cell => cell.position === cellIndex)[0];
     if (updatedCell) {
-        updatedCell.content = content;
+        updatedCell.content = cellData.content;
         return;
     }
 }
 
 const validateGrid = () => {
   error.value = null
-  if (!editedGrid.value.gridName) {
+  if (!editedGrid.value.name) {
     error.value = 'Please enter a grid name'
     return false
   }
-  if (editedGrid.value.gridSize < 3 || editedGrid.value.gridSize > 5) {
+  if (editedGrid.value.size < 3 || editedGrid.value.size > 5) {
     error.value = 'Grid size must be between 3 and 5'
     return false
   }
@@ -87,6 +87,9 @@ const validateGrid = () => {
 const submit = () => {
   if (!validateGrid()) {
     return
+  }
+  if (!editedGrid.value.gridColor) {
+    editedGrid.value.gridColor = COLORS[0]
   }
   if (mode === 'create') {
     gridStore.createGrid(editedGrid.value).then(() => {
@@ -105,15 +108,15 @@ const submit = () => {
     <div class="form">
       <div class="name-input">
         <label for="grid-name">Grid Name</label>
-        <input type="text" name="grid-name" id="grid-name" v-model="editedGrid.gridName" placeholder="Grid Name" />
+        <input type="text" name="grid-name" id="grid-name" v-model="editedGrid.name" placeholder="Grid Name" />
       </div>
       <div class="description-input">
         <label for="grid-description">Description</label>
-        <textarea name="grid-description" id="grid-description" v-model="editedGrid.gridDescription" placeholder="Grid Description"></textarea>
+        <textarea name="grid-description" id="grid-description" v-model="editedGrid.description" placeholder="Grid Description"></textarea>
       </div>
       <div class="size-selection">
         <label for="grid-size">Size</label>
-        <select name="grid-size" id="grid-size" v-model="editedGrid.gridSize">
+        <select name="grid-size" id="grid-size" v-model="editedGrid.size">
           <option value="3">3x3</option>
           <option value="4">4x4</option>
           <option value="5">5x5</option>
@@ -121,7 +124,7 @@ const submit = () => {
       </div>
       <div class="theme-selection">
         <label for="grid-theme">Theme</label>
-        <select name="grid-theme" id="grid-theme" v-model="editedGrid.gridTheme">
+        <select name="grid-theme" id="grid-theme" v-model="editedGrid.theme">
           <option v-for="theme in THEMES" :value="theme">
             {{ theme }}
           </option>
@@ -130,7 +133,7 @@ const submit = () => {
       <div class="color-selection">
         <label for="grid-color">Color</label>
         <select name="grid-color" id="grid-color" v-model="editedGrid.gridColor">
-          <option v-for="color in COLORS" :value="color">
+          <option v-for="color in COLORS" :value="editedGrid.gridColor">
             {{ color.name }}
           </option>
         </select>
@@ -146,10 +149,10 @@ const submit = () => {
 
     <div class="preview">
       <h3>Preview</h3>
-      <div class="grid-preview" :class="'theme-' +editedGrid.gridTheme" >
-        <div class="grid-container" :class="'size-' +editedGrid.gridSize + ' color-' + editedGrid.gridColor.name.toLowerCase().replace(/\s/g, '-')">
-        <div v-for="n in parseInt(editedGrid.gridSize)*parseInt(editedGrid.gridSize)" :key="'row-' + n" class="grid-cell">
-            <CellComponent :index="n" @update:cell="(content)  => handleCellUpdate(n, content)"/>
+      <div class="grid-preview" :class="'theme-' +editedGrid.theme" >
+        <div class="grid-container" :class="'size-' +editedGrid.size + ' color-' + editedGrid.gridColor.name.toLowerCase().replace(/\s/g, '-')">
+        <div v-for="n in parseInt(editedGrid.size)*parseInt(editedGrid.size)" :key="'row-' + n" class="grid-cell">
+            <CellComponent :index="n" @update:cell="(cellData)  => handleCellUpdate(n, cellData)"/>
         </div>
         </div>
       </div>

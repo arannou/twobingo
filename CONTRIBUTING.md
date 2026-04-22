@@ -9,7 +9,7 @@ podman network create pg-network
 ```
 podman run -d   --name postgres-container   --network pg-network   -e POSTGRES_PASSWORD=1234   -p 5432:5432   postgres
 ```
-## Start pgAdmin4
+## Start pgAdmin4 (optionnal)
 ```
 podman run -d   --name pgadmin-container   --network pg-network   -p 8080:80   -e PGADMIN_DEFAULT_EMAIL=admin@test.com   -e PGADMIN_DEFAULT_PASSWORD=admin   dpage/pgadmin4
 ```
@@ -21,6 +21,9 @@ Open pgAdmin web console here: http://localhost:8080/browser/ and login with adm
 ```
 mvn spring-boot:run
 or optional -DskipTests 
+
+#Kill previously running java sprocess with 
+taskkill /F /FI "MEMUSAGE gt 0" /IM java.exe 2>/dev/null || true
 ```
 Ensure it runs by visiting http://localhost:8081/api/twobingo/health
 

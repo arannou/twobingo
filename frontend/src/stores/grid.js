@@ -58,7 +58,10 @@ export const useGridStore = defineStore('grid', () => {
         loading.value = true;
         error.value = null;
         try {
-            const newGrid = await twobingoApi.createGrid(gridData);
+            console.log('Creating grid with data:', gridData);
+            const toCreate = { ...gridData, color: gridData.gridColor.name };
+            delete toCreate.gridColor;
+            const newGrid = await twobingoApi.createGrid(toCreate);
             grids.value.push(newGrid);
             return newGrid;
         } catch (err) {

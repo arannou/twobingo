@@ -1,5 +1,6 @@
 package com.twobingo.service;
 
+import com.twobingo.exceptions.ValidationException;
 import com.twobingo.model.Cell;
 import com.twobingo.model.Grid;
 import com.twobingo.model.Participation;
@@ -10,6 +11,7 @@ import com.twobingo.repository.ParticipationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,8 +40,36 @@ public class GridService {
         return gridRepository.findByCreator(creator);
     }
 
-    public Grid createGrid(Grid grid) {
-        return gridRepository.save(grid);
+    public Grid createGrid(Grid grid) throws ValidationException {
+        if (grid.getName() == null || grid.getName().isEmpty()) {
+            throw new ValidationException("Grid name cannot be empty");
+        }
+        if (grid.getSize() == null || grid.getSize() <= 0) {
+            throw new ValidationException("Grid size must be a positive integer");
+        }
+        if (grid.getCells() != null && grid.getCells().size() < 1) {
+            throw new ValidationException("Number of cells cannot be less than 1");
+        }
+        if (grid.getCells() != null && grid.getCells().size() > grid.getSize() * grid.getSize()) {
+            throw new ValidationException("Number of cells cannot exceed grid size squared");
+        }
+        // for each cell in grid.cells, create a new Cell object and set its grid
+        // reference to the created grid
+        List<Cell> createdCells = new ArrayList<>();
+        if (grid.getCells() != null) {
+            for (Cell cell : grid.getCells()) {
+                // cell.setGrid(grid);
+                System.out.println(
+                        "=====================Saving cell with content: " + cell.toString() + "=====================");
+                createdCells.add(cellRepository.save(cell));
+            }
+        }
+        Grid createdGrid = gridRepository.save(grid);
+        for (Cell cell : createdCells) {
+            cell.setGrid(createdGrid);
+            cellRepository.save(cell);
+        }
+        return createdGrid;
     }
 
     public Grid updateGrid(Long id, Grid gridDetails) {
@@ -49,7 +79,7 @@ public class GridService {
             grid.setName(gridDetails.getName());
             grid.setDescription(gridDetails.getDescription());
             grid.setSize(gridDetails.getSize());
-            grid.setStyle(gridDetails.getStyle());
+            grid.setTheme(gridDetails.getTheme());
             grid.setColor(gridDetails.getColor());
             grid.setIsArchived(gridDetails.getIsArchived());
             grid.setCreator(gridDetails.getCreator());
@@ -60,22 +90,6 @@ public class GridService {
 
     public void deleteGrid(Long id) {
         gridRepository.deleteById(id);
-    }
-
-    public List<User> getUsersByGrid(Grid grid) {
-        List<Participation> participations = participationRepository.findByGrid(grid);
-        return participations.stream()
-                .map(Participation::getUser)
-                .filter(user -> user != null)
-                .collect(Collectors.toList());
-    }
-
-    public List<Grid> getGridsByUser(User user) {
-        List<Participation> participations = participationRepository.findByUseraccount(user);
-        return participations.stream()
-                .map(Participation::getGrid)
-                .filter(gridObj -> gridObj != null)
-                .collect(Collectors.toList());
     }
 
     public List<Cell> getCellsByGrid(Grid grid) {

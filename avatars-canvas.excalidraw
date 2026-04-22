@@ -2125,7 +2125,7 @@
     }
   ],
   "appState": {
-    "gridSize": 20,
+    "size": 20,
     "gridStep": 5,
     "gridModeEnabled": false,
     "viewBackgroundColor": "#ffffff"

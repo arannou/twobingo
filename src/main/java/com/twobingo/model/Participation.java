@@ -22,36 +22,33 @@ public class Participation {
     @Column(length = 100)
     private String pseudo;
 
-    @Column(length = 50)
-    private String color;
-
     @Column(name = "is_approved")
     private Boolean isApproved = false;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     public Participation() {
     }
 
-    public Participation(Grid grid, User user, String pseudo, String color) {
+    public Participation(Grid grid, User user, String pseudo, Boolean isApproved) {
         this.grid = grid;
         this.useraccount = user;
         this.pseudo = pseudo;
-        this.color = color;
+        this.isApproved = isApproved;
     }
 
-    public Participation(Grid grid, String pseudo, String color) {
+    public Participation(Grid grid, String pseudo, Boolean isApproved) {
         this.grid = grid;
         this.pseudo = pseudo;
-        this.color = color;
+        this.isApproved = isApproved;
     }
 
-    public Participation(Grid grid, User user, String color) {
+    public Participation(Grid grid, User user, Boolean isApproved) {
         this.grid = grid;
         this.useraccount = user;
         this.pseudo = user.getUsername();
-        this.color = color;
+        this.isApproved = false;
     }
 
     // Getters and Setters
@@ -85,14 +82,6 @@ public class Participation {
 
     public void setPseudo(String pseudo) {
         this.pseudo = pseudo;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public Boolean getIsApproved() {

@@ -1,7 +1,11 @@
 package com.twobingo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import com.twobingo.controller.LoginRequest;
+import com.twobingo.dto.CellDto;
+import com.twobingo.dto.GridDto;
+import com.twobingo.exceptions.AuthException;
+import com.twobingo.exceptions.ValidationException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,11 +15,14 @@ import com.twobingo.model.Cell;
 import com.twobingo.model.User;
 import com.twobingo.model.Participation;
 import com.twobingo.service.GridService;
+import com.twobingo.service.ParticipationService;
 import com.twobingo.service.UserService;
+import com.twobingo.util.JsonUtil;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/twobingo")
@@ -27,6 +34,9 @@ public class TwobingoController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ParticipationService participationService;
 
     // User management endpoints CRUD operations for users, fetching user details,
     // etc.
@@ -54,20 +64,26 @@ public class TwobingoController {
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
             if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+                Map<String, String> errorResponse = Map.of("error", "Username is required");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of("error", "Username is required"));
+                        .body(JsonUtil.toPrettyJson(errorResponse));
             }
             if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+                Map<String, String> errorResponse = Map.of("error", "Password is required");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of("error", "Password is required"));
+                        .body(JsonUtil.toPrettyJson(errorResponse));
             }
-            return new ResponseEntity<>(Map.of("username", user.getUsername(), "avatarImagePath",
-                    user.getAvatarImagePath(), "connectionToken", user.getConnectionToken()), HttpStatus.CREATED);
+            Map<String, Object> successResponse = Map.of(
+                    "username", user.getUsername(),
+                    "avatarImagePath", user.getAvatarImagePath(),
+                    "connectionToken", user.getConnectionToken());
+            return new ResponseEntity<>(JsonUtil.toPrettyJson(successResponse), HttpStatus.CREATED);
         } catch (RuntimeException ex) {
             System.err.println("Error creating user: " + ex.getMessage());
             ex.printStackTrace();
+            Map<String, String> errorResponse = Map.of("error", ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", ex.getMessage()));
+                    .body(JsonUtil.toPrettyJson(errorResponse));
         }
     }
 
@@ -116,8 +132,50 @@ public class TwobingoController {
     }
 
     @PostMapping("/grids")
-    public ResponseEntity<Grid> createGrid(@RequestBody Grid grid) {
-        return new ResponseEntity<>(gridService.createGrid(grid), HttpStatus.CREATED);
+    public ResponseEntity<?> createGrid(@RequestHeader("Authorization") String token, @RequestBody GridDto gridDto) {
+        try {
+            User user = getValidUserFromToken(token);
+
+            System.out.println("Creating grid with name: " + gridDto.getName() + " for user: " + user.getUsername());
+            System.out.println("Grid details: " + gridDto.toString());
+
+            // Convert GridDto to Grid
+            Grid grid = new Grid();
+            grid.setName(gridDto.getName());
+            grid.setDescription(gridDto.getDescription());
+            grid.setSize(gridDto.getSize());
+            grid.setTheme(gridDto.getTheme());
+            grid.setColor(gridDto.getColor());
+            grid.setIsArchived(gridDto.getIsArchived());
+            grid.setCreator(user);
+
+            // Convert CellDto to Cell
+            List<Cell> cells = new ArrayList<>();
+            if (gridDto.getCells() != null) {
+                for (CellDto cellDto : gridDto.getCells()) {
+                    Cell cell = new Cell();
+                    cell.setContent(cellDto.getContent());
+                    cell.setIsChecked(cellDto.getIsChecked());
+                    cell.setPosition(cellDto.getPosition());
+                    cells.add(cell);
+                }
+            }
+            grid.setCells(cells);
+
+            // Create and validate the grid, then create a participation for the creator
+            Grid createdGrid = gridService.createGrid(grid);
+            Participation participation = new Participation(createdGrid, user,
+                    user.getUsername(), true);
+            participationService.createParticipation(participation);
+
+            return new ResponseEntity<>(JsonUtil.toPrettyJson(createdGrid),
+                    HttpStatus.CREATED);
+
+        } catch (AuthException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (ValidationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PutMapping("/grids/{id}")
@@ -145,20 +203,23 @@ public class TwobingoController {
     @GetMapping("/grids/{gridId}/users")
     public ResponseEntity<List<User>> getUsersByGrid(@PathVariable Long gridId) {
         return gridService.getGridById(gridId)
-                .map(grid -> ResponseEntity.ok(gridService.getUsersByGrid(grid)))
+                .map(grid -> ResponseEntity.ok(participationService.getUsersByGrid(grid)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/users/login")
     public ResponseEntity<?> login(@RequestBody User loginRequest) {
-        System.out.println("Login attempt for username: " + loginRequest.getUsername());
         Optional<User> userOpt = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            return ResponseEntity.ok(Map.of("username", user.getUsername(), "avatarImagePath",
-                    user.getAvatarImagePath(), "connectionToken", user.getConnectionToken()));
+            Map<String, Object> response = Map.of(
+                    "username", user.getUsername(),
+                    "avatarImagePath", user.getAvatarImagePath(),
+                    "connectionToken", user.getConnectionToken());
+            return ResponseEntity.ok(JsonUtil.toPrettyJson(response));
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+            Map<String, String> errorResponse = Map.of("error", "Invalid username or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(JsonUtil.toPrettyJson(errorResponse));
         }
     }
 
@@ -166,18 +227,34 @@ public class TwobingoController {
     @PostMapping("/users/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
         userService.logout(token);
-        return ResponseEntity.ok("Logged out successfully");
+        Map<String, String> response = Map.of("message", "Logged out successfully");
+        return ResponseEntity.ok(JsonUtil.toPrettyJson(response));
     }
 
     // is token valid endpoint to check if the token is valid
     @PostMapping("/validate-token")
     public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
+        try {
+            User user = getValidUserFromToken(token);
+            Map<String, Object> response = Map.of(
+                    "username", user.getUsername(),
+                    "avatarImagePath", user.getAvatarImagePath());
+            return ResponseEntity.ok(JsonUtil.toPrettyJson(response));
+        } catch (AuthException e) {
+            Map<String, String> errorResponse = Map.of("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(JsonUtil.toPrettyJson(errorResponse));
+        }
+    }
+
+    private User getValidUserFromToken(String token) throws AuthException {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
         Optional<User> userOpt = userService.validateToken(token);
         if (!userOpt.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+            throw new AuthException("Invalid token");
         }
-        User user = userOpt.get();
-        return ResponseEntity.ok(Map.of("username", user.getUsername(), "avatarImagePath", user.getAvatarImagePath()));
+        return userOpt.get();
     }
 
     /**
@@ -185,6 +262,7 @@ public class TwobingoController {
      */
     @GetMapping("/health")
     public ResponseEntity<String> health() {
-        return ResponseEntity.ok("Twobingo Service is running");
+        Map<String, String> response = Map.of("status", "UP", "message", "Twobingo Service is running");
+        return ResponseEntity.ok(JsonUtil.toPrettyJson(response));
     }
 }

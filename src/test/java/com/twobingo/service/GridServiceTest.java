@@ -52,27 +52,6 @@ class GridServiceTest {
     }
 
     @Test
-    void getUsersByGrid_returnsUsersFromParticipation() {
-        Grid grid = new Grid();
-        grid.setId(1L);
-
-        User user = new User();
-        user.setId(2L);
-        user.setUsername("player1");
-
-        Participation participation = new Participation();
-        participation.setGrid(grid);
-        participation.setUser(user);
-
-        when(participationRepository.findByGrid(grid)).thenReturn(singletonList(participation));
-
-        List<User> result = gridService.getUsersByGrid(grid);
-
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getUsername()).isEqualTo("player1");
-    }
-
-    @Test
     void getCellsByGrid_returnsCellsForGrid() {
         Grid grid = new Grid();
         grid.setId(3L);
@@ -96,7 +75,7 @@ class GridServiceTest {
         existing.setName("Old Name");
         existing.setDescription("Old desc");
         existing.setSize(3);
-        existing.setStyle("old-style");
+        existing.setTheme("old-style");
         existing.setColor("blue");
         existing.setIsArchived(false);
 
@@ -104,7 +83,7 @@ class GridServiceTest {
         details.setName("New Name");
         details.setDescription("New desc");
         details.setSize(5);
-        details.setStyle("new-style");
+        details.setTheme("new-style");
         details.setColor("red");
         details.setIsArchived(true);
 
@@ -116,7 +95,7 @@ class GridServiceTest {
         assertThat(result.getName()).isEqualTo("New Name");
         assertThat(result.getDescription()).isEqualTo("New desc");
         assertThat(result.getSize()).isEqualTo(5);
-        assertThat(result.getStyle()).isEqualTo("new-style");
+        assertThat(result.getTheme()).isEqualTo("new-style");
         assertThat(result.getColor()).isEqualTo("red");
         assertThat(result.getIsArchived()).isTrue();
     }
