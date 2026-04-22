@@ -54,7 +54,7 @@ const closeEdition = (evt) => {
 <template>
   <div class="cell-component" @click="editCell" @focusout="evt => closeEdition(evt)">
     <span v-if="mode === 'read'">{{ editedCell.content  ?? props.index }}</span>
-    <input ref="editInput" v-show="mode === 'edit'" type="text" v-model="editedCell.content"/>
+    <input ref="editInput" :name="'cell-content-' + props.index" v-show="mode === 'edit'" type="text" v-model="editedCell.content"/>
   </div>
 </template>
 
@@ -64,6 +64,7 @@ const closeEdition = (evt) => {
   height: 5rem;
   padding: .5rem;
   text-align: center;
+  border: 1px solid var(--text);
 }
 
 .cell-component input {
@@ -71,5 +72,9 @@ const closeEdition = (evt) => {
   height: 100%;
   padding: .5rem;
   text-align: center;
+}
+
+.theme-round .cell-component {
+  border-radius: 50%;
 }
 </style>

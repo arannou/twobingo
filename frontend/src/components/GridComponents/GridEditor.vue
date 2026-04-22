@@ -108,7 +108,7 @@ const submit = () => {
     <div class="form">
       <div class="name-input">
         <label for="grid-name">Grid Name</label>
-        <input type="text" name="grid-name" id="grid-name" v-model="editedGrid.name" placeholder="Grid Name" />
+        <input type="text" name="grid-name" id="grid-name" v-model="editedGrid.name" placeholder="Grid Name" autocomplete="off">
       </div>
       <div class="description-input">
         <label for="grid-description">Description</label>
@@ -174,10 +174,12 @@ const submit = () => {
   .form {
     background-color: var(--bg-highlight);
     height: 100%;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
 
     label {
       display: block;
-      margin-bottom: 5px;
+      margin-top: 5px;
     }
   }
 }

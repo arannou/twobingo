@@ -34,22 +34,25 @@ onMounted(() => {
   <div class="app">
     <header>
       <div class="app-header inverted">
-        <h1>{{ t('app.title') }}</h1>
-        <select v-model="locale" class="locale-select" name="language-select" @change="storeLocale">
-          <option v-for="lang in languages" :key="lang.code" :value="lang.code">
-            {{ lang.label }}
-          </option>
-        </select>
-        <UserThumbnail />
+        <h1 @click="router.push('/')">{{ t('app.title') }}</h1>
+        <div>
+
+          <select v-model="locale" class="locale-select" name="language-select" @change="storeLocale">
+            <option v-for="lang in languages" :key="lang.code" :value="lang.code">
+              {{ lang.label }}
+            </option>
+          </select>
+          <UserThumbnail />
+        </div>
       </div>
-      <nav>
+      <!-- <nav>
         <router-link to="/" class="nav-link" :class="{ active: route.path === '/' }">
           titre 1
         </router-link>
         <router-link to="/grid-editor" class="nav-link" :class="{ active: route.path === '/grid-editor' }">
           titre 2
         </router-link>
-      </nav>
+      </nav> -->
     </header>
     <main>
       <router-view />
@@ -85,10 +88,14 @@ header {
 
 main {
   flex-grow: 2;
+  border-radius: 20px;
+  margin-top: -20px;
+  background: var(--bg);
 }
 
 .app-header {
-  padding: 30px 20px;
+  padding: 20px;
+  padding-bottom: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
