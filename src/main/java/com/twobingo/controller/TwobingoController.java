@@ -21,6 +21,7 @@ import com.twobingo.service.UserService;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import java.util.ArrayList;
 
 @RestController
@@ -40,24 +41,25 @@ public class TwobingoController {
     // User management endpoints CRUD operations for users, fetching user details,
     // etc.
 
-    @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
-    }
+    // @GetMapping("/users")
+    // public ResponseEntity<List<User>> getAllUsers() {
+    // return ResponseEntity.ok(userService.getAllUsers());
+    // }
 
-    @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
+    // @GetMapping("/users/{id}")
+    // public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    // return userService.getUserById(id)
+    // .map(ResponseEntity::ok)
+    // .orElseGet(() -> ResponseEntity.notFound().build());
+    // }
 
-    @GetMapping("/users/username/{username}")
-    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
-        return userService.getUserByUsername(username)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
+    // @GetMapping("/users/username/{username}")
+    // public ResponseEntity<User> getUserByUsername(@PathVariable String username)
+    // {
+    // return userService.getUserByUsername(username)
+    // .map(ResponseEntity::ok)
+    // .orElseGet(() -> ResponseEntity.notFound().build());
+    // }
 
     @PostMapping("/users/register")
     public ResponseEntity<?> createUser(@RequestBody User user) {
@@ -86,42 +88,55 @@ public class TwobingoController {
         }
     }
 
-    @PutMapping("/users/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+    // @PutMapping("/users/{id}")
+    // public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody
+    // User userDetails) {
+    // try {
+    // return ResponseEntity.ok(userService.updateUser(id, userDetails));
+    // } catch (RuntimeException ex) {
+    // return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    // }
+    // }
+
+    // @DeleteMapping("/users/{id}")
+    // public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    // userService.deleteUser(id);
+    // return ResponseEntity.noContent().build();
+    // }
+
+    // @GetMapping("/users/{userId}/created-grids")
+    // public ResponseEntity<List<Grid>> getCreatedGrids(@PathVariable Long userId)
+    // {
+    // return userService.getUserById(userId)
+    // .map(user -> ResponseEntity.ok(userService.getCreatedGrids(user)))
+    // .orElseGet(() -> ResponseEntity.notFound().build());
+    // }
+
+    @GetMapping("/grids/user")
+    public ResponseEntity<?> getParticipatingGrids(@RequestHeader("Authorization") String token) {
         try {
-            return ResponseEntity.ok(userService.updateUser(id, userDetails));
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            User user = getValidUserFromToken(token);
+            List<Grid> grid = userService.getParticipatingGrids(user);
+            System.out.println("Participating grids for user " + user.getUsername() + ": " + grid.size());
+            Map<String, Object> grids_map = Map.of("grids", grid
+                    .stream()
+                    .map(Grid::toResponseMap)
+                    .toList());
+            return ResponseEntity.ok(grids_map);
+        } catch (AuthException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
-    }
 
-    @DeleteMapping("/users/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/users/{userId}/created-grids")
-    public ResponseEntity<List<Grid>> getCreatedGrids(@PathVariable Long userId) {
-        return userService.getUserById(userId)
-                .map(user -> ResponseEntity.ok(userService.getCreatedGrids(user)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/users/{userId}/participating-grids")
-    public ResponseEntity<List<Grid>> getParticipatingGrids(@PathVariable Long userId) {
-        return userService.getUserById(userId)
-                .map(user -> ResponseEntity.ok(userService.getParticipatingGrids(user)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // Grid management endpoints CRUD operations for grids and cells, participation
     // management, etc.
 
-    @GetMapping("/grids")
-    public ResponseEntity<List<Grid>> getAllGrids(@RequestHeader("Authorization") String token) {
-        return ResponseEntity.ok(gridService.getAllGrids());
-    }
+    // @GetMapping("/grids")
+    // public ResponseEntity<List<Grid>> getAllGrids(@RequestHeader("Authorization")
+    // String token) {
+    // return ResponseEntity.ok(gridService.getAllGrids());
+    // }
 
     @GetMapping("/grids/{id}")
     public ResponseEntity<Grid> getGridById(@PathVariable Long id) {
@@ -134,9 +149,6 @@ public class TwobingoController {
     public ResponseEntity<?> createGrid(@RequestHeader("Authorization") String token, @RequestBody GridDto gridDto) {
         try {
             User user = getValidUserFromToken(token);
-
-            System.out.println("Creating grid with name: " + gridDto.getName() + " for user: " + user.getUsername());
-            System.out.println("Grid details: " + gridDto.toString());
 
             // Convert GridDto to Grid
             Grid grid = new Grid();
@@ -194,12 +206,12 @@ public class TwobingoController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/grids/{gridId}/cells")
-    public ResponseEntity<List<Cell>> getCellsByGrid(@PathVariable Long gridId) {
-        return gridService.getGridById(gridId)
-                .map(grid -> ResponseEntity.ok(gridService.getCellsByGrid(grid)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
+    // @GetMapping("/grids/{gridId}/cells")
+    // public ResponseEntity<List<Cell>> getCellsByGrid(@PathVariable Long gridId) {
+    // return gridService.getGridById(gridId)
+    // .map(grid -> ResponseEntity.ok(gridService.getCellsByGrid(grid)))
+    // .orElseGet(() -> ResponseEntity.notFound().build());
+    // }
 
     @GetMapping("/grids/{gridId}/users")
     public ResponseEntity<List<User>> getUsersByGrid(@PathVariable Long gridId) {
