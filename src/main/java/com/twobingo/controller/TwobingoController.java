@@ -117,7 +117,6 @@ public class TwobingoController {
         try {
             User user = getValidUserFromToken(token);
             List<Grid> grid = userService.getParticipatingGrids(user);
-            System.out.println("Participating grids for user " + user.getUsername() + ": " + grid.size());
             Map<String, Object> grids_map = Map.of("grids", grid
                     .stream()
                     .map(Grid::toResponseMap)
@@ -139,10 +138,14 @@ public class TwobingoController {
     // }
 
     @GetMapping("/grids/{id}")
-    public ResponseEntity<Grid> getGridById(@PathVariable Long id) {
-        return gridService.getGridById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Map<String, Object>> getGridById(@PathVariable Long id) {
+        Optional<Grid> gridOpt = gridService.getGridById(id);
+        if (gridOpt.isPresent()) {
+            Grid grid = gridOpt.get();
+            return ResponseEntity.ok(grid.toResponseMap());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/grids")
@@ -192,11 +195,31 @@ public class TwobingoController {
     }
 
     @PutMapping("/grids/{id}")
-    public ResponseEntity<Grid> updateGrid(@PathVariable Long id, @RequestBody Grid gridDetails) {
+    public ResponseEntity<Map<String, Object>> updateGrid(@RequestHeader("Authorization") String token,
+            @PathVariable Long id, @RequestBody Grid gridDetails) {
         try {
-            return ResponseEntity.ok(gridService.updateGrid(id, gridDetails));
+            User user = getValidUserFromToken(token);
+
+            if (id == null || id <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
+            // ensure user is participating in the grid before allowing update
+            Optional<Grid> gridOpt = gridService.getGridById(id);
+            if (!gridOpt.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+            Grid grid = gridOpt.get();
+            Participation participation = participationService.getParticipationByGridAndUser(user, grid);
+            if (participation == null || !participation.getIsApproved()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            Grid updatedGrid = gridService.updateGrid(id, gridDetails);
+            return ResponseEntity.ok(updatedGrid.toResponseMap());
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (AuthException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 

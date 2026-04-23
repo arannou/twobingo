@@ -41,6 +41,14 @@ public class ParticipationService {
                 .collect(Collectors.toList());
     }
 
+    public Participation getParticipationByGridAndUser(User user, Grid grid) {
+        List<Participation> participations = participationRepository.findByUseraccount(user);
+        return participations.stream()
+                .filter(p -> p.getGrid() != null && p.getGrid().getId().equals(grid.getId()))
+                .findFirst()
+                .orElse(null);
+    }
+
     public Participation createParticipation(@NonNull Participation participation) {
         if (participation.getGrid() == null || participation.getUser() == null) {
             throw new IllegalArgumentException("Grid and User must not be null");

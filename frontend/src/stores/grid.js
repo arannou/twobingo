@@ -45,6 +45,7 @@ export const useGridStore = defineStore('grid', () => {
         error.value = null;
         try {
             selectedGrid.value = await twobingoApi.getGridById(id);
+            return selectedGrid.value;
         } catch (err) {
             error.value = err.message;
             console.error('Error fetching grid:', err);
@@ -58,7 +59,6 @@ export const useGridStore = defineStore('grid', () => {
         loading.value = true;
         error.value = null;
         try {
-            console.log('Creating grid with data:', gridData);
             const toCreate = { ...gridData, color: gridData.gridColor.name };
             delete toCreate.gridColor;
             const newGrid = await twobingoApi.createGrid(toCreate);
@@ -77,7 +77,9 @@ export const useGridStore = defineStore('grid', () => {
         loading.value = true;
         error.value = null;
         try {
-            const updatedGrid = await twobingoApi.updateGrid(id, gridData);
+            const toUpdate = { ...gridData, color: gridData.gridColor.name };
+            delete toUpdate.gridColor;
+            const updatedGrid = await twobingoApi.updateGrid(id, toUpdate);
             const index = grids.value.findIndex((grid) => grid.id === id);
             if (index !== -1) {
                 grids.value[index] = updatedGrid;

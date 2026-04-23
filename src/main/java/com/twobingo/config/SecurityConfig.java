@@ -67,8 +67,7 @@ public class SecurityConfig {
                 Optional<User> userOpt = userRepository.findByConnectionToken(token);
 
                 if (userOpt.isPresent() && token.equals(userOpt.get().getConnectionToken())) {
-                    System.out.println("========= \n Auth is granted for route: " + context.getRequest().getRequestURI()
-                            + " =========");
+
                     return new AuthorizationDecision(true);
                 }
             }

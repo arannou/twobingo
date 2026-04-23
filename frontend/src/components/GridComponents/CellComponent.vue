@@ -1,7 +1,7 @@
 <script setup>
 
 
-import { onMounted, ref, useTemplateRef, nextTick } from 'vue'
+import { onMounted, ref, useTemplateRef, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useGridStore } from '../../stores/grid'
 
@@ -10,8 +10,6 @@ const gridStore = useGridStore()
 const { t } = useI18n()
 
 const props = defineProps({
-  cellId: String,
-  gridId: String,
   index: Number,
   content: String
 })
@@ -27,8 +25,8 @@ const editInput = useTemplateRef('editInput')
 const mode = ref('read') // or 'edit'
 
 onMounted(() => {
-  if (props.gridId && props.cellId) {
-    gridStore.loadCell(props.gridId, props.cellId)
+  if (props.content) {
+    editedCell.value.content = props.content
   }
 })
 
@@ -47,6 +45,11 @@ const closeEdition = (evt) => {
     }
 
 }
+
+// watcher on props.content to update editedCell when content changes from outside
+watch(() => props.content, (newContent) => {
+  editedCell.value.content = newContent
+})
 
 
 

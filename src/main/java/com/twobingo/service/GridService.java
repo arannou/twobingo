@@ -3,18 +3,17 @@ package com.twobingo.service;
 import com.twobingo.exceptions.ValidationException;
 import com.twobingo.model.Cell;
 import com.twobingo.model.Grid;
-import com.twobingo.model.Participation;
 import com.twobingo.model.User;
 import com.twobingo.repository.CellRepository;
 import com.twobingo.repository.GridRepository;
 import com.twobingo.repository.ParticipationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class GridService {
@@ -58,9 +57,8 @@ public class GridService {
         List<Cell> createdCells = new ArrayList<>();
         if (grid.getCells() != null) {
             for (Cell cell : grid.getCells()) {
-                // cell.setGrid(grid);
-                System.out.println(
-                        "=====================Saving cell with content: " + cell.toString() + "=====================");
+                if (cell == null)
+                    continue;
                 createdCells.add(cellRepository.save(cell));
             }
         }
@@ -72,7 +70,7 @@ public class GridService {
         return createdGrid;
     }
 
-    public Grid updateGrid(Long id, Grid gridDetails) {
+    public Grid updateGrid(@NonNull Long id, Grid gridDetails) {
         Optional<Grid> existingGrid = gridRepository.findById(id);
         if (existingGrid.isPresent()) {
             Grid grid = existingGrid.get();
@@ -83,7 +81,25 @@ public class GridService {
             grid.setColor(gridDetails.getColor());
             grid.setIsArchived(gridDetails.getIsArchived());
             grid.setCreator(gridDetails.getCreator());
-            return gridRepository.save(grid);
+            Grid updatedGrid = gridRepository.save(grid);
+            for (Cell cellDetails : gridDetails.getCells()) {
+                Long cellId = cellDetails.getId();
+                Cell cell = new Cell();
+                if (cellId != null) {
+                    Optional<Cell> cellOpt = cellRepository.findById(cellId);
+                    if (cellOpt.isPresent()) {
+                        cell = cellOpt.get();
+                    }
+                }
+                cell.setContent(cellDetails.getContent());
+                cell.setIsChecked(cellDetails.getIsChecked());
+                cell.setPosition(cellDetails.getPosition());
+                cell.setGrid(updatedGrid);
+
+                cellRepository.save(cell);
+
+            }
+            return updatedGrid;
         }
         throw new RuntimeException("Grid not found with id: " + id);
     }

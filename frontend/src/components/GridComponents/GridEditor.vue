@@ -48,20 +48,45 @@ const editedGrid = ref({
 onBeforeMount(() => {
   if (gridStore.selectedGrid?.id) {
       mode.value = 'edit'
-      console.log('Using selectedGrid from store for editing', gridStore.selectedGrid)
-      editedGrid.value = { ...gridStore.selectedGrid };
+      loadGridData(gridStore.selectedGrid)
+    } else {
+      if (route.query.gridId) {
+        const gridId = parseInt(route.query.gridId)
+        gridStore.fetchGridById(gridId).then((gridToEdit) => {
+          if (gridToEdit) {
+            mode.value = 'edit'
+
+            loadGridData(gridToEdit)
+          } else {
+            console.warn('No grid found with id from route query:', route.query.gridId)
+          }
+        })
+
+      }
+      mode.value = 'create'
+    }
+  
+})
+
+const loadGridData = (data) => {
+      editedGrid.value = { ...data };
       // find color object from COLORS array that matches the gridColor name
-      const colorObj = COLORS.find(color => color.name === gridStore.selectedGrid.gridColor)
+      const colorObj = COLORS.find(color => color.name === data.color)
       if (colorObj) {
         editedGrid.value.gridColor = colorObj;
       } else {
         editedGrid.value.gridColor = COLORS[0];
       }
+  }
 
-    } else {
-      mode.value = 'create'
-    }
-  
+
+const cellsByPosition = computed(() => {
+  if (!editedGrid.value.cells) return {};
+  let byPos = {}
+  for (let cell of editedGrid.value.cells) {
+    byPos[cell.position] = cell.content;
+  }
+  return byPos;
 })
 
 const handleCellUpdate = (cellIndex, cellData) => {
@@ -71,11 +96,19 @@ const handleCellUpdate = (cellIndex, cellData) => {
         editedGrid.value.cells.push({ content: cellData.content, checked: false, position: cellIndex });
         return;
     }
-    const updatedCell = editedGrid.value.cells.filter(cell => cell.position === cellIndex)[0];
-    if (updatedCell) {
-        updatedCell.content = cellData.content;
-        return;
+    const updatedCells = editedGrid.value.cells.map(cell => {
+      if (cell.position === cellIndex) {
+        cell.content = cellData.content;
+      }
+      return cell;
+    });
+    // if cell with position cellIndex doesn't exist, add it
+    if (!editedGrid.value.cells.some(cell => cell.position === cellIndex)) {
+        editedGrid.value.cells.push({ content: cellData.content, checked: false, position: cellIndex });
+    } else {
+        editedGrid.value.cells = updatedCells;
     }
+
 }
 
 const validateGrid = () => {
@@ -143,7 +176,7 @@ const submit = () => {
       <div class="color-selection">
         <label for="grid-color">Color</label>
         <select name="grid-color" id="grid-color" v-model="editedGrid.gridColor">
-          <option v-for="color in COLORS" :value="editedGrid.gridColor">
+          <option v-for="color in COLORS" :value="color">
             {{ color.name }}
           </option>
         </select>
@@ -162,7 +195,7 @@ const submit = () => {
       <div class="grid-preview" :class="'theme-' +editedGrid.theme" >
         <div class="grid-container" :class="'size-' +editedGrid.size + ' color-' + editedGrid.gridColor.name.toLowerCase().replace(/\s/g, '-')">
         <div v-for="n in parseInt(editedGrid.size)*parseInt(editedGrid.size)" :key="'row-' + n" class="grid-cell">
-            <CellComponent :index="n" @update:cell="(cellData)  => handleCellUpdate(n, cellData)"/>
+            <CellComponent :content="cellsByPosition[n] ?? ''" :index="n" @update:cell="(cellData)  => handleCellUpdate(n, cellData)"/>
         </div>
         </div>
       </div>
