@@ -26,6 +26,15 @@
         "loading": "Chargement...",
         "create": "Créer",
         "refresh": "Actualiser",
-        "noItems": "Aucun élément trouvé"
+        "noItems": "Aucun élément trouvé",
+        "ownerOnly": "Seulement créé par moi",
+        "archivedItems": "Archives",
+        "connectToCreateGrids": "Connectez votre compte pour créer et gérer des grilles"
+    },
+    "verb": {
+        "play": "Jouer",
+        "share": "Partager",
+        "edit": "Modifier",
+        "delete": "Supprimer"
     }
 }

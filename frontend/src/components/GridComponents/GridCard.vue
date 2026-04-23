@@ -52,8 +52,8 @@ const onEditGrid = () => {
     <div class="confirmation confirm-delete" v-if="confirmationVisible">
       <p>{{ t('gridCard.confirmDelete') }}</p>
       <div class="button-group">
-        <button class="small" @click="gridStore.deleteGrid(props.grid.id)">{{ t('gridCard.yes') }}</button>
-        <button class="small" @click="confirmationVisible = false">{{ t('gridCard.no') }}</button>
+        <button class="small" @click="gridStore.deleteGrid(props.grid.id)">{{ t('answer.yes') }}</button>
+        <button class="small" @click="confirmationVisible = false">{{ t('answer.no') }}</button>
       </div>
     </div>
     <div class="confirmation confirm-success" v-if="copySuccessVisible">
@@ -66,10 +66,10 @@ const onEditGrid = () => {
     <p>{{ props.grid.description }}</p>
 
     <div class="icon-group">
-        <button class="small" @click="router.push(`/play/gridId=${props.grid.id}`)" :title="t('gridCard.play')">⚡▶️▶</button>
-        <button class="small" @click="copyLink()" :title="t('gridCard.share')">🔗</button>
-        <button class="small" @click="onEditGrid()" :title="t('gridCard.edit')">✏️</button>
-        <button class="small" @click="onDeleteClick()" :title="t('gridCard.delete')">🗑️</button>
+        <button class="small primary" @click="router.push(`/play/gridId=${props.grid.id}`)" :title="t('verb.play')"> {{t('verb.play') }} ⚡</button>
+        <button class="small" @click="copyLink()" :title="t('verb.share')">🔗</button>
+        <button class="small" @click="onEditGrid()" :title="t('verb.edit')">✏️</button>
+        <button class="small" @click="onDeleteClick()" :title="t('verb.delete')">🗑️</button>
     </div>
   </div>
 </template>

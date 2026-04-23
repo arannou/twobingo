@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
-import { computed, onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, ref, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useUserStore } from '../../stores/user'
 import { useGridStore } from '../../stores/grid'
@@ -144,6 +144,10 @@ const submit = () => {
     })
   }
 }
+// Before unmount, reset the selected grid in the store to avoid stale data when creating a new grid after editing
+onBeforeUnmount(() => {
+  gridStore.selectedGrid = null
+})
 </script>
 
 <template>

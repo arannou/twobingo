@@ -26,6 +26,15 @@
         "loading": "Loading...",
         "create": "Create",
         "refresh": "Refresh",
-        "noItems": "No items found"
+        "noItems": "No items found",
+        "ownerOnly": "Only created by me",
+        "archivedItems": "Archived",
+        "connectToCreateGrids": "Connect your account to create and manage grids"
+    },
+    "verb": {
+        "play": "Play",
+        "share": "Share",
+        "edit": "Edit",
+        "delete": "Delete"
     }
 }
