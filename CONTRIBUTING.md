@@ -47,18 +47,36 @@ Ensure it works by visiting http://localhost:5173/
 ## Done
 * create backend and basic api
 * create frontend and basic ui
+* create grid
+* edit and delete grids
 
 
 ## In progress
-* create grid
-* edit and delete grids
-* add participants
+
 
 ## Todo
+
+### Priority high
+* play grid
+    - view
+    - update isChecked
+* fix creator issue
+* archive grid
+* grid settings:
+    - join with link or with approval
+* add participants
+* update grid in real time with sockets
+
+### Priority medium
+
+* handle un-registred users
+
+### Priority low
 * add aria labels, titles and other accessibility features
 * add frontend toast notifications
 * add tests
 * add password encryption
+* add user last login date
 * add auto-clean up and management interface
 
 * add about and legal and contact

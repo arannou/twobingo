@@ -145,7 +145,7 @@ export const twobingoApi = {
             headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!response.ok) throw new Error('Failed to delete grid');
-        return response.json();
+        return true;
     }
 
 

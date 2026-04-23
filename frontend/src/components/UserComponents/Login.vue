@@ -93,19 +93,26 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    padding: 2rem 4rem;
 
     width: 50%;
     margin: auto;
+    border-radius: 20px;
+    background-color: var(--bg-highlight);
 
     button {
-        margin: 0 2rem;
         padding: 0.5rem 1rem;
+    }
+
+    .button-group {
+        justify-content: center;
     }
 }
 
 @media (max-width:  variables.$breakPointMedium) {
     .login-view .form {
-        width: 80%;
+        width: 100%;
+        padding: 1rem;
     }
 }
 </style>

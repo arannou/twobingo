@@ -106,7 +106,11 @@ const onEditGrid = () => {
     padding: 1rem;
 
     &.confirm-delete {
-      background: #00000083;
+      background: #000000b8;
+
+      p {
+        color: white;
+      }
     }
     &.confirm-success {
       background: #39ba39;

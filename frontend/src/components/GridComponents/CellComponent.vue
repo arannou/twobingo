@@ -61,8 +61,13 @@ watch(() => props.content, (newContent) => {
   </div>
 </template>
 
-<style>
+<style lang="scss">
+
+@use "./../../variables.scss";
+
 .cell-component {
+  width: 20%;
+  height: 20%;
   padding: .5rem;
   text-align: center;
   border: 1px solid var(--text);
@@ -80,17 +85,34 @@ watch(() => props.content, (newContent) => {
 }
 
 .size-3 .cell-component {
-  width: 30vw;
-  height: 30vw;
+  width: 22vh;
+  height: 22vh;
 }
 
 .size-4 .cell-component {
-  width: 22vw;
-  height: 22vw;
+  width: 17vh;
+  height: 17vh;
 }
 
 .size-5 .cell-component {
-  width: 18vw;
-  height: 18vw;
+  width: 14vh;
+  height: 14vh;
+}
+
+@media (max-width: variables.$breakPointSmall) {
+  .size-3 .cell-component {
+    width: 30vw;
+    height: 30vw;
+  }
+
+  .size-4 .cell-component {
+    width: 22vw;
+    height: 22vw;
+  }
+
+  .size-5 .cell-component {
+    width: 18vw;
+    height: 18vw;
+  }
 }
 </style>
