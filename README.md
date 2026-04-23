@@ -28,8 +28,8 @@ src/
 
 ## Technology Stack
 
-- Java 17
-- Spring Boot 3.2
+- Java 25
+- Spring Boot 3.5
 - Spring Web
 - Spring Data JPA
 - PostgreSQL
@@ -109,7 +109,7 @@ GET /api/twobingo/grids/{gridId}/users
 
 ### Prerequisites
 
-- Java 17 or higher
+- Java 25 or higher
 - Maven 3.6+
 - PostgreSQL
 
@@ -197,7 +197,7 @@ This produces an executable JAR in the `target/` folder.
 
 ## Technologies Used
 
-- **Spring Boot 3.2.3**
+- **Spring Boot 3.5.13**
 - **Spring Data JPA**
 - **Hibernate**
 - **PostgreSQL** (Default database)

@@ -1,6 +1,5 @@
 package com.twobingo.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -20,7 +19,6 @@ public class Cell {
     private String content;
 
     @Column(name = "is_checked")
-    @JsonProperty("checked")
     private Boolean isChecked = false;
 
     @Column(name = "created_at", updatable = false)

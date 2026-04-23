@@ -1,13 +1,11 @@
 package com.twobingo.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.annotations.Expose;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import com.twobingo.model.User;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class GridDto {
 
     @Expose

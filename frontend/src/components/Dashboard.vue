@@ -8,9 +8,6 @@
     <div v-if="!userStore.currentUser.username" class="banner info-message">
       <p>{{ t('dashboard.connectToCreateGrids') }}</p>
     </div>
-      <div class="banner info-message">
-      <p>Online : {{ isOnline }}</p>
-    </div>
 
     <div v-if="gridStore.loading" class="banner loading-message">
       <p>{{ t('dashboard.loading') }}</p>
@@ -83,9 +80,6 @@ const gridStore = useGridStore()
 const userStore = useUserStore()
 const { t } = useI18n()
 
-const isOnline = ref(sessionStorage.getItem("twobingo:online") === "true")
-
-
 const navigateToCreate = () => {
   router.push('/grid-creator')
 }
@@ -114,7 +108,7 @@ onMounted(() => {
   loadGrids()
 })
 
-watch(userStore.currentUser.username, () => loadGrids())
+
 </script>
 
 <style scoped>

@@ -1,7 +1,6 @@
 package com.twobingo.config;
 
 import java.lang.reflect.Type;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -13,9 +12,13 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
+/**
+ * Custom GSON adapter for LocalDateTime that uses ISO format to avoid
+ * Java 9+ module encapsulation issues with reflection on private fields.
+ */
 public class LocalDateTimeTypeAdapter implements JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime> {
 
-  private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d::MMM::uuuu HH::mm::ss");
+  private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
   @Override
   public LocalDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)

@@ -3,6 +3,7 @@ package com.twobingo.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "grid")
@@ -179,5 +180,22 @@ public class Grid {
                 ", color=" + color +
                 ", creator=" + (creator != null ? creator.getUsername() : "Creator not found") +
                 '}';
+    }
+
+    public Map<String, Object> toResponseMap() {
+        return Map.of(
+                "id", id,
+                "name", name,
+                "description", description,
+                "size", size,
+                "theme", theme,
+                "color", color,
+                "isArchived", isArchived,
+                "creatorUsername", creator != null ? creator.getUsername() : "Creator not found",
+                "cells", cells.stream().map(cell -> Map.of(
+                        "id", cell.getId(),
+                        "content", cell.getContent(),
+                        "isChecked", cell.getIsChecked(),
+                        "position", cell.getPosition())).toList());
     }
 }

@@ -1,19 +1,13 @@
 package com.twobingo.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class CellDto {
     @Expose
     private String content;
 
     @Expose
-    @SerializedName("checked")
-    @JsonProperty("checked")
-    private Boolean isChecked = false;
+    private Boolean checked = false;
 
     @Expose
     private Integer position;
@@ -21,9 +15,9 @@ public class CellDto {
     public CellDto() {
     }
 
-    public CellDto(String content, Boolean isChecked, Integer position) {
+    public CellDto(String content, Boolean checked, Integer position) {
         this.content = content;
-        this.isChecked = isChecked;
+        this.checked = checked;
         this.position = position;
     }
 
@@ -36,12 +30,12 @@ public class CellDto {
         this.content = content;
     }
 
-    public Boolean getIsChecked() {
-        return isChecked;
+    public Boolean getChecked() {
+        return checked;
     }
 
-    public void setIsChecked(Boolean isChecked) {
-        this.isChecked = isChecked;
+    public void setChecked(Boolean checked) {
+        this.checked = checked;
     }
 
     public Integer getPosition() {
@@ -56,7 +50,7 @@ public class CellDto {
     public String toString() {
         return "CellDto{" +
                 "content='" + content + '\'' +
-                ", isChecked=" + isChecked +
+                ", checked=" + checked +
                 ", position=" + position +
                 '}';
     }
