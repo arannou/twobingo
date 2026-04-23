@@ -51,9 +51,9 @@
 
 
     <!-- Items List -->
-    <div v-if="gridStore.grids.length > 0" class="grid-list">
+    <div v-if="gridsList.length > 0" class="grid-list">
       <GridCard
-        v-for="grid in gridStore.grids"
+        v-for="grid in gridsList"
         :key="grid.id"
         :grid="grid"
       >
@@ -70,7 +70,7 @@
 import { useRouter } from 'vue-router'
 import { useGridStore } from '../stores/grid'
 import { useUserStore } from '../stores/user'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import GridCard from './GridComponents/GridCard.vue'
 
@@ -88,6 +88,7 @@ const loadGrids = async () => {
   if (userStore.currentUser.username) {
     gridStore.fetchForUser()
   } else {
+    console.log('No user logged in, loading grids from localStorage')
     let lsGrids = localStorage.getItem('grids')
     if (lsGrids) {
       try {
@@ -103,8 +104,17 @@ const loadGrids = async () => {
   }
 }
 
+
+const gridsList = computed(() => {
+  return gridStore.grids
+})
 // Load items on component mount
 onMounted(() => {
+  loadGrids()
+})
+
+// watcher on userStore.currentUser.username to reload grids when user logs in or out
+watch(() => userStore.currentUser.username, (newUsername, oldUsername) => {
   loadGrids()
 })
 

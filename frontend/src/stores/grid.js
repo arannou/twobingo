@@ -29,7 +29,8 @@ export const useGridStore = defineStore('grid', () => {
         error.value = null;
 
         try {
-            grids.value = await twobingoApi.getGridsForUser();
+            const gridsMap = await twobingoApi.getGridsForUser();
+            grids.value = gridsMap.grids || [];
         } catch (err) {
             error.value = err.message;
             console.error('Error fetching grids:', err);
