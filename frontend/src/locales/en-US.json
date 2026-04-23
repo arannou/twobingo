@@ -36,5 +36,14 @@
         "share": "Share",
         "edit": "Edit",
         "delete": "Delete"
+    },
+    "answer": {
+        "yes": "Yes",
+        "no": "No"
+    },
+    "gridCard": {
+        "confirmDelete": "Are you sure?",
+        "copySuccess": "Link copied successfully!",
+        "copyFailure": "Failed to copy the link."
     }
 }

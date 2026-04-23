@@ -63,8 +63,6 @@ watch(() => props.content, (newContent) => {
 
 <style>
 .cell-component {
-  width: 5rem;
-  height: 5rem;
   padding: .5rem;
   text-align: center;
   border: 1px solid var(--text);
@@ -79,5 +77,20 @@ watch(() => props.content, (newContent) => {
 
 .theme-round .cell-component {
   border-radius: 50%;
+}
+
+.size-3 .cell-component {
+  width: 30vw;
+  height: 30vw;
+}
+
+.size-4 .cell-component {
+  width: 22vw;
+  height: 22vw;
+}
+
+.size-5 .cell-component {
+  width: 18vw;
+  height: 18vw;
 }
 </style>

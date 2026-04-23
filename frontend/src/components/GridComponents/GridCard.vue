@@ -109,12 +109,12 @@ const onEditGrid = () => {
       background: #00000083;
     }
     &.confirm-success {
-      background: #00ff0083;
+      background: #39ba39;
       // animate opacity from 1 to 0 over 2 seconds, then hide
       animation: fadeConfirmation 2s ease-in-out 2s 1 normal forwards;
     }
     &.confirm-failure {
-      background: #ff000083;
+      background: #d53333;
       animation: fadeConfirmation 2s ease-in-out 2s 1 normal forwards;
     }
 

@@ -212,6 +212,8 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 
+@use "./../../variables.scss";
+
 .grid-editor {
   display: flex;
   flex-direction: row;
@@ -229,6 +231,10 @@ onBeforeUnmount(() => {
       margin-top: 5px;
     }
   }
+
+  .button-group {
+    justify-content: center;
+  }
 }
 
 
@@ -240,8 +246,12 @@ onBeforeUnmount(() => {
   &.theme-round .grid-cell {
     border-radius: 50%;
   }
+}
 
-
+.grid-cell {
+  font-size: 10px;
+  line-height: normal;
+  word-break: break-word;
 }
 
 .grid-container {
@@ -277,6 +287,17 @@ onBeforeUnmount(() => {
   &.color-blue .grid-cell {
     background-color: #aaaaff;
     color: #000;
+  }
+}
+
+@media (max-width: variables.$breakPointSmall) {
+  .grid-editor {
+    flex-direction: column;
+
+    .form {
+      border-top-right-radius: 20px;
+      border-bottom-left-radius: 0px;
+    }
   }
 }
 </style>

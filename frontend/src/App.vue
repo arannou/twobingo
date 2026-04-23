@@ -194,8 +194,5 @@ nav {
     }
   }
 
-  main {
-    padding: 10px;
-  }
 }
 </style>

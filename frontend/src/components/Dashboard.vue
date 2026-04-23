@@ -121,7 +121,10 @@ watch(() => userStore.currentUser.username, (newUsername, oldUsername) => {
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+
+@use "./../variables.scss";
+
 .dashboard {
   margin: 0 auto;
   padding: 20px;
@@ -171,4 +174,12 @@ watch(() => userStore.currentUser.username, (newUsername, oldUsername) => {
   flex-wrap: wrap;
   gap: 1rem;
 }
+
+@media (max-width: variables.$breakPointSmall) {
+  .grid-list {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
 </style>

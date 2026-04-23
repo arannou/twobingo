@@ -84,7 +84,7 @@ onMounted(() => {
   padding: 8px 12px;
   text-decoration: none;
   color: var(--text);
-  background: var(--bg);
+  background: var(--bg-highlight);
 }
 
 .dropdown-item:hover {
