@@ -11,10 +11,14 @@ const { t } = useI18n()
 
 const props = defineProps({
   index: Number,
-  content: String
+  content: String,
+  editable: {
+    type: Boolean,
+    default: true
+  }
 })
 
-const emit = defineEmits(['update:cell'])
+const emit = defineEmits(['update:cell', 'check'])
 
 const editedCell = ref({
       content: null,
@@ -30,12 +34,17 @@ onMounted(() => {
   }
 })
 
-const editCell = () => {
-  mode.value = 'edit'
-  // wait vue netxtick
-  nextTick(() => {
-    editInput.value.focus()
-  })
+const clickCell = () => {
+  if (!props.editable) {
+    editedCell.value.checked = !editedCell.value.checked
+    emit('check', editedCell.value.checked)
+  } else {
+    mode.value = 'edit'
+    // wait vue netxtick
+    nextTick(() => {
+      editInput.value.focus()
+    })
+  }
 }
 
 const closeEdition = (evt) => {
@@ -55,9 +64,10 @@ watch(() => props.content, (newContent) => {
 
 </script>
 <template>
-  <div class="cell-component" @click="editCell" @focusout="evt => closeEdition(evt)">
+  <div :class="'cell-component ' + (editedCell.checked ? 'checked' : '')" @click="clickCell" @focusout="evt => closeEdition(evt)" >
     <span v-if="mode === 'read'">{{ editedCell.content  ?? props.index }}</span>
-    <input ref="editInput" :name="'cell-content-' + props.index" v-show="mode === 'edit'" type="text" v-model="editedCell.content"/>
+    <input class="content-input" ref="editInput" :name="'cell-content-' + props.index" v-show="mode === 'edit'" type="text" v-model="editedCell.content"/>
+    <input class="check-input" v-show="mode !== 'edit'" type="checkbox" v-model="editedCell.checked" @change="$emit('check', editedCell.checked)"/>
   </div>
 </template>
 
@@ -71,9 +81,18 @@ watch(() => props.content, (newContent) => {
   padding: .5rem;
   text-align: center;
   border: 1px solid var(--text);
+  position: relative;
+
+  input.check-input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
 }
 
-.cell-component input {
+.cell-component input.content-input {
   width: 100%;
   height: 100%;
   padding: .5rem;

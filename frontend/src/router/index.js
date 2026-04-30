@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '../components/Dashboard.vue'
 import GridEditor from '../components/GridComponents/GridEditor.vue'
+import GridPlayer from '../components/GridComponents/GridPlayer.vue'
 import Login from '../components/UserComponents/Login.vue'
 
 const routes = [
@@ -18,6 +19,12 @@ const routes = [
         path: '/grid-editor',
         name: 'GridEditor',
         component: GridEditor,
+        props: true,
+    },
+    {
+        path: '/play/:gridId',
+        name: 'GridPlayer',
+        component: GridPlayer,
         props: true,
     },
     {

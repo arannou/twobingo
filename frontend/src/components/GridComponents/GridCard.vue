@@ -45,6 +45,10 @@ const onEditGrid = () => {
   gridStore.selectedGrid = props.grid
   router.push({name: 'GridEditor', query: { 'gridId': props.grid.id }})
 }
+const onClickPlay = () => {
+  gridStore.selectedGrid = props.grid
+  router.push({name: 'GridPlayer', params: { 'gridId': props.grid.id }})
+}
 
 </script>
 <template>
@@ -66,7 +70,7 @@ const onEditGrid = () => {
     <p>{{ props.grid.description }}</p>
 
     <div class="icon-group">
-        <button class="small primary" @click="router.push(`/play/gridId=${props.grid.id}`)" :title="t('verb.play')"> {{t('verb.play') }} ⚡</button>
+        <button class="small primary" @click="onClickPlay()" :title="t('verb.play')"> {{t('verb.play') }} ⚡</button>
         <button class="small" @click="copyLink()" :title="t('verb.share')">🔗</button>
         <button class="small" @click="onEditGrid()" :title="t('verb.edit')">✏️</button>
         <button class="small" @click="onDeleteClick()" :title="t('verb.delete')">🗑️</button>

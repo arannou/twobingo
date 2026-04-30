@@ -6,6 +6,8 @@ import { useUserStore } from '../../stores/user'
 import { useGridStore } from '../../stores/grid'
 import CellComponent from './CellComponent.vue'
 
+import { THEMES, COLORS } from '../../variables'
+
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
@@ -16,26 +18,7 @@ const mode = ref('create')
 
 const error = ref(null)
 
-const THEMES = ['square','round']
-const COLORS = [
-  { name: 'Black and white',
-    foreground: '#fff',
-    background: '#000',
-    textColor: '#000000'
-  },
-  {
-    name: 'Green',
-    foreground: '#00ff00',
-    background: '#aaffaa',
-    textColor: '#000000'
-  },
-  {
-    name: 'Blue',
-    foreground: '#0000ff',
-    background: '#aaaaff',
-    textColor: '#000000'
-  },
-]
+
 
 const editedGrid = ref({
       name: '',
@@ -287,6 +270,10 @@ onBeforeUnmount(() => {
   &.color-blue .grid-cell {
     background-color: #aaaaff;
     color: #000;
+  }
+
+  .grid-cell:has(.checked) {
+    opacity: .7;
   }
 }
 
