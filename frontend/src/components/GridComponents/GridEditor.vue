@@ -67,7 +67,7 @@ const cellsByPosition = computed(() => {
   if (!editedGrid.value.cells) return {};
   let byPos = {}
   for (let cell of editedGrid.value.cells) {
-    byPos[cell.position] = cell.content;
+    byPos[cell.position] = cell;
   }
   return byPos;
 })
@@ -182,7 +182,7 @@ onBeforeUnmount(() => {
       <div class="grid-preview" :class="'theme-' +editedGrid.theme" >
         <div class="grid-container" :class="'size-' +editedGrid.size + ' color-' + editedGrid.gridColor.name.toLowerCase().replace(/\s/g, '-')">
         <div v-for="n in parseInt(editedGrid.size)*parseInt(editedGrid.size)" :key="'row-' + n" class="grid-cell">
-            <CellComponent :content="cellsByPosition[n] ?? ''" :index="n" @update:cell="(cellData)  => handleCellUpdate(n, cellData)"/>
+            <CellComponent :data="cellsByPosition[n]" @update:cell="(cellData)  => handleCellUpdate(n, cellData)"/>
         </div>
         </div>
       </div>

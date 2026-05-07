@@ -116,7 +116,20 @@ export const useGridStore = defineStore('grid', () => {
         }
     };
 
-
+    const updateCell = async (cellId, { checked: isChecked }) => {
+        loading.value = true;
+        error.value = null;
+        try {
+            const updatedCell = await twobingoApi.updateCell(cellId, { checked: isChecked });
+            return updatedCell;
+        } catch (err) {
+            error.value = err.message;
+            console.error('Error updating cell:', err);
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    };
 
     return {
         // State
@@ -136,6 +149,7 @@ export const useGridStore = defineStore('grid', () => {
         createGrid,
         updateGrid,
         deleteGrid,
+        updateCell,
 
     };
 });

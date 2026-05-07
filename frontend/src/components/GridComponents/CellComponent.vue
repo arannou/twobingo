@@ -1,7 +1,7 @@
 <script setup>
 
 
-import { onMounted, ref, useTemplateRef, nextTick, watch } from 'vue'
+import { onMounted, ref, useTemplateRef, nextTick, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useGridStore } from '../../stores/grid'
 
@@ -10,8 +10,7 @@ const gridStore = useGridStore()
 const { t } = useI18n()
 
 const props = defineProps({
-  index: Number,
-  content: String,
+  data: Object,
   editable: {
     type: Boolean,
     default: true
@@ -24,20 +23,23 @@ const editedCell = ref({
       content: null,
       checked: false
   })
+const index = ref(-1)
 
 const editInput = useTemplateRef('editInput')
 const mode = ref('read') // or 'edit'
 
 onMounted(() => {
-  if (props.content) {
-    editedCell.value.content = props.content
+  if (props.data) {
+    editedCell.value.content = props.data.content ?? ''
+    editedCell.value.isChecked = props.data.isChecked ?? false
+    index.value = props.data.position ?? -1 
   }
 })
 
 const clickCell = () => {
   if (!props.editable) {
-    editedCell.value.checked = !editedCell.value.checked
-    emit('check', editedCell.value.checked)
+    editedCell.value.isChecked = !editedCell.value.isChecked
+    emit('check', editedCell.value.isChecked)
   } else {
     mode.value = 'edit'
     // wait vue netxtick
@@ -55,19 +57,27 @@ const closeEdition = (evt) => {
 
 }
 
+const isChecked = computed(() => {
+  return editedCell.value.isChecked
+})
+
 // watcher on props.content to update editedCell when content changes from outside
-watch(() => props.content, (newContent) => {
-  editedCell.value.content = newContent
+watch(() => props.data, (newdata) => {
+  if (newdata) {
+    editedCell.value.content = newdata.content ?? ''
+    editedCell.value.isChecked = newdata.isChecked ?? false
+  }
 })
 
 
 
 </script>
 <template>
-  <div :class="'cell-component ' + (editedCell.checked ? 'checked' : '')" @click="clickCell" @focusout="evt => closeEdition(evt)" >
-    <span v-if="mode === 'read'">{{ editedCell.content  ?? props.index }}</span>
-    <input class="content-input" ref="editInput" :name="'cell-content-' + props.index" v-show="mode === 'edit'" type="text" v-model="editedCell.content"/>
-    <input class="check-input" v-show="mode !== 'edit'" type="checkbox" v-model="editedCell.checked" @change="$emit('check', editedCell.checked)"/>
+  <div :class="'cell-component ' + (isChecked ? 'checked' : '')" @click="clickCell()" @focusout="evt => closeEdition(evt)" >
+    <span v-if="mode === 'read'">{{ editedCell.content  ?? index }}</span>
+    <input class="content-input" ref="editInput" :name="'cell-content-' + index" v-show="mode === 'edit'" type="text" v-model="editedCell.content"/>
+    <input class="check-input" v-show="mode !== 'edit'" type="checkbox" 
+    :checked="isChecked" v-model="editedCell.isChecked" @change="$emit('check', editedCell.isChecked)"/>
   </div>
 </template>
 

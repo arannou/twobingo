@@ -146,7 +146,23 @@ export const twobingoApi = {
         });
         if (!response.ok) throw new Error('Failed to delete grid');
         return true;
-    }
+    },
 
+    async updateCell(cellId, { checked: isChecked }) {
+        const token = localStorage.getItem('connectionToken');
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+        const response = await fetch(`${API_BASE_URL}/cells/${cellId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ checked: isChecked })
+        });
+        if (!response.ok) throw new Error('Failed to update cell');
+        return response.json();
+    }
 
 };

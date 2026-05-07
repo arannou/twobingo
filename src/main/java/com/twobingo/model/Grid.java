@@ -183,6 +183,11 @@ public class Grid {
     }
 
     public Map<String, Object> toResponseMap() {
+
+        List<Map<String, Object>> cellsMap = List.of();
+        if (cells != null) {
+            cellsMap = cells.stream().map(Cell::toResponseMap).toList();
+        }
         return Map.of(
                 "id", id,
                 "name", name,
@@ -192,10 +197,7 @@ public class Grid {
                 "color", color,
                 "isArchived", isArchived,
                 "creatorUsername", creator != null ? creator.getUsername() : "Creator not found",
-                "cells", cells.stream().map(cell -> Map.of(
-                        "id", cell.getId(),
-                        "content", cell.getContent(),
-                        "isChecked", cell.getIsChecked(),
-                        "position", cell.getPosition())).toList());
+                "cells", cellsMap);
+
     }
 }

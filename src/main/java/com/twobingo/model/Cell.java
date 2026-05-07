@@ -2,6 +2,7 @@ package com.twobingo.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Entity
 @Table(name = "cell")
@@ -97,7 +98,18 @@ public class Cell {
                 ", isChecked=" + isChecked +
                 ", createdAt=" + createdAt +
                 ", gridId=" + (grid != null ? grid.getId() : "No Grid") +
+                ", position=" + position +
                 '}';
+    }
+
+    public Map<String, Object> toResponseMap() {
+        System.out.println("Converting Cell to response map: " + this.toString());
+        return Map.of(
+                "id", id,
+                "content", content != null ? content : "",
+                "isChecked", isChecked,
+                "createdAt", createdAt,
+                "position", position != null ? position : -1);
     }
 
 }

@@ -229,12 +229,15 @@ public class TwobingoController {
         return ResponseEntity.noContent().build();
     }
 
-    // @GetMapping("/grids/{gridId}/cells")
-    // public ResponseEntity<List<Cell>> getCellsByGrid(@PathVariable Long gridId) {
-    // return gridService.getGridById(gridId)
-    // .map(grid -> ResponseEntity.ok(gridService.getCellsByGrid(grid)))
-    // .orElseGet(() -> ResponseEntity.notFound().build());
-    // }
+    @PutMapping("/cells/{cellId}")
+    public ResponseEntity<Map<String, Object>> updateCell(@PathVariable Long cellId,
+            @RequestBody Map<String, Boolean> cellDetails) {
+        // Implementation for updating a specific cell
+        if (cellId == null || cellId <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        return ResponseEntity.ok(gridService.checkCell(cellId, cellDetails.get("checked")).toResponseMap());
+    }
 
     @GetMapping("/grids/{gridId}/users")
     public ResponseEntity<List<User>> getUsersByGrid(@PathVariable Long gridId) {

@@ -111,4 +111,14 @@ public class GridService {
     public List<Cell> getCellsByGrid(Grid grid) {
         return cellRepository.findByGrid_Id(grid.getId());
     }
+
+    public Cell checkCell(@NonNull Long cellId, Boolean checked) {
+        Optional<Cell> existingCell = cellRepository.findById(cellId);
+        if (existingCell.isPresent()) {
+            Cell cell = existingCell.get();
+            cell.setIsChecked(checked);
+            return cellRepository.save(cell);
+        }
+        throw new RuntimeException("Cell not found with id: " + cellId);
+    }
 }

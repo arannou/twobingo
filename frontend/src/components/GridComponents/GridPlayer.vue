@@ -1,9 +1,10 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
-import { computed, onBeforeMount, ref, onBeforeUnmount } from 'vue'
+import { computed, onBeforeMount, ref, onBeforeUnmount, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useUserStore } from '../../stores/user'
 import { useGridStore } from '../../stores/grid'
+import { useNotificationStore } from '../../stores/notifications';
 import CellComponent from './CellComponent.vue'
 
 import { THEMES, COLORS } from '../../variables'
@@ -14,6 +15,7 @@ const userStore = useUserStore()
 const gridStore = useGridStore()
 const { t } = useI18n()
 const mode = ref('create')
+const notificationStore = useNotificationStore();
 
 
 const playedGrid = ref({
@@ -46,6 +48,14 @@ onBeforeMount(() => {
     }
 })
 
+onMounted(() => {
+        // Listen for cell changes
+      notificationStore.onEvent('cell:changed', (cellData) => {
+        console.log('Cell changed:', cellData);
+        // Update cell in UI
+      });
+})
+
 const loadGridData = (data) => {
       playedGrid.value = { ...data };
       // find color object from COLORS array that matches the gridColor name
@@ -55,13 +65,14 @@ const loadGridData = (data) => {
       } else {
         playedGrid.value.gridColor = COLORS[0];
       }
+
   }
 
 const cellsByPosition = computed(() => {
   if (!playedGrid.value.cells) return {};
   let byPos = {}
   for (let cell of playedGrid.value.cells) {
-    byPos[cell.position] = cell.content;
+    byPos[cell.position] = cell;
   }
   return byPos;
 })
@@ -73,7 +84,16 @@ const onCellCheck = (cellIndex, isChecked) => {
     const updatedCells = playedGrid.value.cells.map(cell => {
       if (cell.position === cellIndex) {
         cell.checked = isChecked;
-      }
+      
+        // api call to update cell state in backend with grid store
+         gridStore.updateCell(cell.id, { checked: isChecked })
+            // .then(() => {
+            //   console.log('Cell state updated successfully');
+            // })
+            // .catch((error) => {
+            //   console.error('Failed to update cell state:', error);
+            // });
+        }
       return cell;
     });
 
@@ -91,7 +111,7 @@ const onCellCheck = (cellIndex, isChecked) => {
       <div class="grid-preview" :class="'theme-' +playedGrid.theme" >
         <div class="grid-container" :class="'size-' +playedGrid.size + ' color-' + playedGrid.gridColor.name.toLowerCase().replace(/\s/g, '-')">
         <div v-for="n in parseInt(playedGrid.size)*parseInt(playedGrid.size)" :key="'row-' + n" class="grid-cell">
-            <CellComponent :content="cellsByPosition[n] ?? ''" :index="n" :editable="false" @check="(isChecked)  => onCellCheck(n, isChecked)"/>
+            <CellComponent :data="cellsByPosition[n]" :editable="false" @check="(isChecked)  => onCellCheck(n, isChecked)"/>
         </div>
         </div>
       </div>
