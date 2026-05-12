@@ -2,7 +2,6 @@ package com.twobingo.config;
 
 import java.lang.reflect.Type;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.google.gson.JsonDeserializationContext;

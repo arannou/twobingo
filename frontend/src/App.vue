@@ -1,10 +1,15 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useNotificationStore } from './stores/notifications';
+import { useUserStore } from './stores/user';
+
 
 import UserThumbnail from './components/UserComponents/UserThumbnail.vue'
 
+const notificationStore = useNotificationStore();
+const userStore = useUserStore();
 const router = useRouter()
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -25,9 +30,25 @@ const loadLocale = () => {
   }
 }
 
-onMounted(() => {
+
+onMounted(async () => {
   loadLocale()
-})
+  try {
+    // Get current user ID
+    const userId = userStore.user?.id;
+    
+    // Initialize notification center
+    await notificationStore.initializeNotificationCenter(userId);
+    console.log('Notification center initialized');
+  } catch (error) {
+    console.error('Failed to initialize notification center:', error);
+  }
+});
+
+onUnmounted(() => {
+  notificationStore.disconnect();
+});
+
 </script>
 
 <template>

@@ -52,14 +52,14 @@ Ensure it works by visiting http://localhost:5173/
 
 
 ## In progress
-
+* play grid
+    - view
+    - update isChecked
+    - sockets
 
 ## Todo
 
 ### Priority high
-* play grid
-    - view
-    - update isChecked
 * fix creator issue
 * archive grid
 * grid settings:
